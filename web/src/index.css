@@ -32,13 +32,11 @@ body {
   border: 3px solid #A80F23;
   border-radius: 25px;
   padding: 25px 0;
-  margin-top: 45px;
-  margin-left: 25px;
+  margin: auto;
   margin-bottom: -75px;
   width: 50%;
   z-index: 2;
-  position: absolute;
-  rotate: -10deg;
+  position: relative;
 }
 
 .name-card-name {
