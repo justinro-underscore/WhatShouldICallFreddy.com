@@ -24,25 +24,83 @@ function NameCard(props) {
 function PollOptions(props) {
   return (
     <div className="poll-options-container">
-      <p className="poll-option poll-option-yes">YES</p>
+      <p className="poll-option poll-option-yes" onClick={ () => props.voteFunc(true) }>YES</p>
       <hr className="poll-option-divider"/>
       <p className="poll-option poll-option-new-pic">NEW PICTURE</p>
       <hr className="poll-option-divider"/>
-      <p className="poll-option poll-option-no">NO</p>
+      <p className="poll-option poll-option-no" onClick={ () => props.voteFunc(false) }>NO</p>
     </div>
   );
 }
 
 class Poll extends React.Component {
+  /**
+   * Set up react component
+   * @param {props} props 
+   */
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "",
+      nextNameIndex: 1,
+      loading: true
+    };
+  }
+
+  /**
+   * After component mounts, fetch the new name
+   */
+  componentDidMount() {
+    this.fetchName();
+  }
+
+  fetchName() {
+    fetch(`http://localhost:8080/dognames/${ this.state.nextNameIndex }`)
+      .then(
+        (res) => {
+          res.json().then(
+            (resjson) => {
+              this.setState({
+                name: resjson.name,
+                nextNameIndex: this.state.nextNameIndex + 1,
+                loading: false
+              });
+            },
+            (error) => this.apiError(error)
+          );
+        },
+        (error) => this.apiError(error)
+      );
+  }
+
+  voteOnName(voteIsYes) {
+    console.log(`Vote: ${ voteIsYes }`);
+    this.fetchName();
+  }
+
+  /**
+   * Handles what should happen when there is an error from the API
+   * @param {json} error Describes info from the error
+   */
+  apiError(error) {
+    console.log(error); // TODO Figure out how to show this
+  }
+
+
   render() {
-    return (
-      <div className="poll-container">
-        <p className="poll-header">Does this name fit?</p>
-        <NameCard name="Trevor"/>
-        <img className="poll-img" src={FreddyPic}></img>
-        <PollOptions />
-      </div>
-    )
+    if (!this.state.loading) {
+      return (
+        <div className="poll-container">
+          <p className="poll-header">Does this name fit?</p>
+          <NameCard name={ this.state.name }/>
+          <img className="poll-img" src={FreddyPic}></img>
+          <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) }/>
+        </div>
+      );
+    }
+    else {
+      return <div>Loading...</div>
+    }
   }
 }
 
