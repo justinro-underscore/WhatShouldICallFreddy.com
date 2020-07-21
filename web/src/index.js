@@ -21,13 +21,26 @@ function NameCard(props) {
   );
 }
 
+function PollOptions(props) {
+  return (
+    <div className="poll-options-container">
+      <p className="poll-option poll-option-yes">YES</p>
+      <hr className="poll-option-divider"/>
+      <p className="poll-option poll-option-new-pic">NEW PICTURE</p>
+      <hr className="poll-option-divider"/>
+      <p className="poll-option poll-option-no">NO</p>
+    </div>
+  );
+}
+
 class Poll extends React.Component {
   render() {
     return (
       <div className="poll-container">
-        {/* <p className="poll-header">Does this name fit?</p> */}
+        <p className="poll-header">Does this name fit?</p>
         <NameCard name="Trevor"/>
         <img className="poll-img" src={FreddyPic}></img>
+        <PollOptions />
       </div>
     )
   }
