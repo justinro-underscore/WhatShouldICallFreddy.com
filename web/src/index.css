@@ -118,7 +118,6 @@ body {
 .new-name-form-header {
   margin: 0;
   font-weight: initial;
-  margin-left: 5px;
   margin-bottom: 10px;
 }
 
@@ -150,4 +149,27 @@ body {
   color: #FFFFFF;
   outline: 0;
   box-shadow: 0 0 40px 40px #3628FF inset;
+}
+
+.new-name-form-input-container {
+  display: flex;
+  transition: width 0.1s ease-in-out;
+  margin: auto;
+  overflow: hidden;
+}
+
+.new-name-form-loading-spinner {
+  position: absolute;
+  height: 50px;
+  margin-left: -25px;
+}
+
+.new-name-form-api-res {
+  margin: 5px;
+  text-align: left;
+  color: #2C21CE;
+}
+
+.new-name-form-api-res-error {
+  color: #dd0000;
 }
