@@ -121,6 +121,15 @@ body {
   margin-bottom: 10px;
 }
 
+.new-name-form-input-container {
+  display: flex;
+  transition: width 0.1s ease-in-out;
+  margin: auto;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+
 .new-name-form-input {
   font-size: 28px;
   width: 100%;
@@ -151,13 +160,6 @@ body {
   box-shadow: 0 0 40px 40px #3628FF inset;
 }
 
-.new-name-form-input-container {
-  display: flex;
-  transition: width 0.1s ease-in-out;
-  margin: auto;
-  overflow: hidden;
-}
-
 .new-name-form-loading-spinner {
   position: absolute;
   height: 50px;
@@ -168,6 +170,8 @@ body {
   margin: 5px;
   text-align: left;
   color: #2C21CE;
+  position: relative;
+  z-index: 1;
 }
 
 .new-name-form-api-res-error {

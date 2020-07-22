@@ -236,7 +236,7 @@ class NewNameForm extends React.Component {
           </div>
           {!(this.state.showInput && this.state.apiResultText !== "") ? "" :
             <Motion
-              defaultStyle={{y: -20}}
+              defaultStyle={{y: -40}}
               style={{y: spring(0)}}
             >
               {style => (
