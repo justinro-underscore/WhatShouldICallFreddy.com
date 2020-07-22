@@ -119,6 +119,39 @@ class Poll extends React.Component {
   }
 }
 
+class NewNameForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      newName: ""
+    };
+  }
+
+  handleChange(event) {
+    this.setState({newName: event.target.value});
+  }
+
+  handleSubmit(event) {
+    console.log(this.state.newName);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <div className="new-name-form">
+        <form onSubmit={ (event) => this.handleSubmit(event) }>
+          <label htmlFor="newName"><h2 className="new-name-form-header">Suggest a name!</h2></label>
+          <div style={{display: "flex"}}>
+            <input type="text" className="new-name-form-input" id="newName" value={ this.state.value }
+              placeholder="Enter a name..." onChange={ (event) => this.handleChange(event) } />
+            <input type="submit" className="new-name-form-submit" value="Submit" />
+          </div>
+        </form>
+      </div>
+    );
+  }
+}
+
 function App(props) {
   return (
     <Motion
@@ -129,6 +162,7 @@ function App(props) {
         <div style={{transform: `translateY(${style.y}px)`, opacity: style.opacity}}>
           <Header />
           <Poll />
+          <NewNameForm />
         </div>
       )}
     </Motion>

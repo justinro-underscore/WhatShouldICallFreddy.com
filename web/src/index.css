@@ -20,6 +20,7 @@ body {
   border-radius: 20px;
   background-color: #E1E1E1;
   margin: auto;
+  margin-bottom: 20px;
   padding: 10px 50px 30px 50px;
 }
 
@@ -104,4 +105,49 @@ body {
   margin: 10px 0;
   z-index: 3;
   position: relative;
+}
+
+.new-name-form {
+  border-radius: 20px;
+  background-color: #E1E1E1;
+  margin: auto;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.new-name-form-header {
+  margin: 0;
+  font-weight: initial;
+  margin-left: 5px;
+  margin-bottom: 10px;
+}
+
+.new-name-form-input {
+  font-size: 28px;
+  width: 100%;
+  margin-right: 5px;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.new-name-form-submit {
+  box-sizing: border-box;
+  appearance: none;
+  background-color: transparent;
+  border: 3px solid #3628FF;
+  border-radius: 10px;
+  color: #3628FF;
+  cursor: pointer;
+  display: flex;
+  font-weight: bold;
+  font-size: 24px;
+  padding: 10px;
+  transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+}
+
+.new-name-form-submit:hover {
+  background-color: #2C21CE;
+  color: #FFFFFF;
+  outline: 0;
+  box-shadow: 0 0 40px 40px #3628FF inset;
 }
