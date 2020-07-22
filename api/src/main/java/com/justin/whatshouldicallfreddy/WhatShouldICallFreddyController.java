@@ -10,6 +10,8 @@ import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
 import com.justin.whatshouldicallfreddy.models.DogName;
 import com.justin.whatshouldicallfreddy.repos.DogNameRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,8 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WhatShouldICallFreddyController {
   private final DogNameRepository dogNameRepository;
-
   private final DogNameModelAssembler dogNameAssembler;
+  private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
   public WhatShouldICallFreddyController(DogNameRepository dogNameRepository, DogNameModelAssembler dogNameAssembler) {
     this.dogNameRepository = dogNameRepository;
@@ -38,6 +40,7 @@ public class WhatShouldICallFreddyController {
     List<EntityModel<DogName>> dogNames = dogNameRepository.findAll().stream()
       .map(dogNameAssembler::toModel).collect(Collectors.toList());
 
+    log.info("GET " + "/dognames " + "Retrieving " + dogNames.size() + " names");
     return CollectionModel.of(dogNames,
       linkTo(methodOn(WhatShouldICallFreddyController.class).all()).withSelfRel()
     );
@@ -45,7 +48,9 @@ public class WhatShouldICallFreddyController {
 
   @PostMapping("/dognames")
   public DogName newDogName(@RequestBody DogName newDogName) {
-    return dogNameRepository.save(newDogName);
+    DogName dogName = dogNameRepository.save(newDogName);
+    log.info("POST " + "/dognames " + "Saving " + dogName);
+    return dogName;
   }
 
   // Single item
@@ -53,6 +58,7 @@ public class WhatShouldICallFreddyController {
   @GetMapping("/dognames/{id}")
   public EntityModel<DogName> one(@PathVariable Long id) {
     DogName dogName = dogNameRepository.findById(id).orElseThrow(() -> new DogNameNotFoundException(id));
+    log.info("GET " + "/dognames/" + id + "/ " + "Retrieving " + dogName);
     return EntityModel.of(dogName,
       linkTo(methodOn(WhatShouldICallFreddyController.class).one(dogName.getId())).withSelfRel(),
       linkTo(methodOn(WhatShouldICallFreddyController.class).dogNameVote(dogName.getId(), true)).withRel("dognames/vote"),
@@ -63,18 +69,21 @@ public class WhatShouldICallFreddyController {
   @PutMapping("/dognames/{id}")
   public DogName replaceDogName(@RequestBody DogName newDogName, @PathVariable Long id) {
     return dogNameRepository.findById(id).map(dogName -> {
+      log.info("PUT " + "/dognames/" + id + "/ " + "Replacing " + dogName + " with " + newDogName);
       dogName.setName(newDogName.getName());
       dogName.setYesVotes(newDogName.getYesVotes());
       dogName.setNoVotes(newDogName.getNoVotes());
       return dogNameRepository.save(dogName);
     }).orElseGet(() -> {
       newDogName.setId(id);
+      log.info("PUT " + "/dognames/" + id + "/ " + "Dog not found, creating " + newDogName);
       return dogNameRepository.save(newDogName);
     });
   }
 
   @DeleteMapping("/dognames/{id}")
   public void deleteDogName(@PathVariable Long id) {
+    log.info("DELETE " + "/dognames/" + id + "/ " + "Deleting dog name with id " + id);
     dogNameRepository.deleteById(id);
   }
 
@@ -83,6 +92,7 @@ public class WhatShouldICallFreddyController {
   @PostMapping("/dognames/vote/{id}/{vote}")
   public EntityModel<DogName> dogNameVote(@PathVariable Long id, @PathVariable Boolean vote) {
     DogName dogName = dogNameRepository.findById(id).map(dn -> {
+      log.info("POST " + "/dognames/vote/" + id + "/" + vote + "/ " + "Increasing " + (vote ? "yes" : "no") + " votes for " + dn);
       if (vote) {
         dn.incYesVotes();
       }
