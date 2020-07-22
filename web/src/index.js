@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Motion, spring} from 'react-motion';
+import {Motion, spring, presets} from 'react-motion';
 import './index.css';
 import FreddyPic from './res/Freddy2.jpg';
 
@@ -15,15 +15,15 @@ function Header(props) {
 
 function NameCard(props) {
   return (
-    <div className="name-card-back">
-      <p className="name-card-name">{props.name}</p>
+    <div className="name-card-back" style={{transform: `rotate(${ props.rotation }deg)`}}>
+      <p className="name-card-name">{ props.name === "" ? '____' : props.name }</p>
     </div>
   );
 }
 
 function PollOptions(props) {
   return (
-    <div className="poll-options-container">
+    <div className="poll-options-container" style={{transform: `rotate(${ props.rotation }deg)`}}>
       <p className="poll-option poll-option-yes" onClick={ () => props.voteFunc(true) }>YES</p>
       <hr className="poll-option-divider"/>
       <p className="poll-option poll-option-new-pic">NEW PICTURE</p>
@@ -43,8 +43,10 @@ class Poll extends React.Component {
     this.state = {
       name: "",
       nextNameIndex: 1,
-      loading: true
+      loading: true,
+      rotation: 20
     };
+    this.resetRotationInterval(true);
   }
 
   /**
@@ -65,6 +67,10 @@ class Poll extends React.Component {
                 nextNameIndex: this.state.nextNameIndex + 1,
                 loading: false
               });
+              setTimeout(() => {
+                clearInterval(this.rotationInterval);
+                this.setState({rotation: 0});
+              }, 100);
             },
             (error) => this.apiError(error)
           );
@@ -73,8 +79,14 @@ class Poll extends React.Component {
       );
   }
 
+  resetRotationInterval(startLeft) {
+    this.setState({rotation: startLeft ? -20 : 20});
+    this.rotationInterval = setInterval(() => this.setState({rotation: this.state.rotation === 20 ? -20 : 20}), 50);
+  }
+
   voteOnName(voteIsYes) {
     console.log(`Vote: ${ voteIsYes }`);
+    this.resetRotationInterval(voteIsYes);
     this.fetchName();
   }
 
@@ -86,21 +98,24 @@ class Poll extends React.Component {
     console.log(error); // TODO Figure out how to show this
   }
 
-
   render() {
-    if (!this.state.loading) {
-      return (
-        <div className="poll-container">
-          <p className="poll-header">Does this name fit?</p>
-          <NameCard name={ this.state.name }/>
-          <img className="poll-img" src={FreddyPic}></img>
-          <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) }/>
-        </div>
-      );
-    }
-    else {
-      return <div>Loading...</div>
-    }
+    return (
+      <Motion
+        defaultStyle={{rot: 0, opacity: 1}}
+        style={{rot: spring(this.state.rotation, presets.wobbly), opacity: spring(this.state.rotation === 0 ? 1 : 0)}}
+      >
+        {style => (
+          <div className="poll-container">
+            <div style={{opacity: style.opacity}}>
+              <p className="poll-header">Does this name fit?</p>
+              <NameCard name={ this.state.name } rotation={ style.rot }/>
+              <img className="poll-img" src={FreddyPic}></img>
+              <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } rotation={ style.rot }/>
+            </div>
+          </div>
+        )}
+      </Motion>
+    );
   }
 }
 
@@ -117,11 +132,6 @@ function App(props) {
         </div>
       )}
     </Motion>
-
-    // <div>
-    //   <Header />
-    //   <Poll />
-    // </div>
   )
 }
 
