@@ -86,9 +86,12 @@ class Poll extends React.Component {
   }
 
   voteOnName(voteIsYes) {
-    console.log(`Vote: ${ voteIsYes }`);
+    fetch(`http://localhost:8080/dognames/vote/${this.state.nextNameIndex - 1}/${voteIsYes}`, {method: 'POST'})
+      .then(
+        (res) => this.fetchName(),
+        (error) => this.apiError(error)
+      );
     this.resetRotationInterval(voteIsYes);
-    this.fetchName();
   }
 
   /**
