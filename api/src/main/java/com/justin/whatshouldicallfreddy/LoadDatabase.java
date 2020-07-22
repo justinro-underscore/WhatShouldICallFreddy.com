@@ -16,12 +16,16 @@ public class LoadDatabase {
   @Bean
   CommandLineRunner initDatabase(DogNameRepository repository) {
     return args -> {
-      log.info("Preloading " + repository.save(new DogName("Freddy")));
-      log.info("Preloading " + repository.save(new DogName("Fred")));
-      log.info("Preloading " + repository.save(new DogName("Ferdinator 5000")));
-      log.info("Preloading " + repository.save(new DogName("Freds")));
-      log.info("Preloading " + repository.save(new DogName("Ferds")));
-      log.info("Preloading " + repository.save(new DogName("Fredster")));
+      log.info("Preloading " + repository.save(new DogName("Charlie")));
+      log.info("Preloading " + repository.save(new DogName("Max")));
+      log.info("Preloading " + repository.save(new DogName("Buddy")));
+      log.info("Preloading " + repository.save(new DogName("Oscar")));
+      log.info("Preloading " + repository.save(new DogName("Milo")));
+      log.info("Preloading " + repository.save(new DogName("Archie")));
+      log.info("Preloading " + repository.save(new DogName("Ollie")));
+      log.info("Preloading " + repository.save(new DogName("Toby")));
+      log.info("Preloading " + repository.save(new DogName("Jack")));
+      log.info("Preloading " + repository.save(new DogName("Teddy")));
     };
   }
 }
