@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class DogNameNotFoundAdvice {
-  @ExceptionHandler(DogNameNotFoundException.class)
-  @ResponseStatus(HttpStatus.NOT_FOUND)
+public class DogNameExistsAdvice {
+  @ExceptionHandler(DogNameExistsException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
   @ResponseBody
-  String dogNameNotFoundHandler(DogNameNotFoundException ex) {
+  String dogNameExistsHandler(DogNameExistsException ex) {
     return ex.getMessage();
   }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.justin.whatshouldicallfreddy.assemblers.DogNameModelAssembler;
+import com.justin.whatshouldicallfreddy.exceptions.DogNameExistsException;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
 import com.justin.whatshouldicallfreddy.models.DogName;
 import com.justin.whatshouldicallfreddy.repos.DogNameRepository;
@@ -48,9 +49,13 @@ public class WhatShouldICallFreddyController {
 
   @PostMapping("/dognames")
   public DogName newDogName(@RequestBody DogName newDogName) {
-    DogName dogName = dogNameRepository.save(newDogName);
-    log.info("POST " + "/dognames " + "Saving " + dogName);
-    return dogName;
+    if (dogNameRepository.countByName(newDogName.getName()) == 0) {
+      DogName dogName = dogNameRepository.save(newDogName);
+      log.info("POST " + "/dognames " + "Saving " + dogName);
+      return dogName;
+    }
+    log.info("POST " + "/dognames " + "Dog name \"" + newDogName.getName() + "\" already exists");
+    throw new DogNameExistsException(newDogName.getName());
   }
 
   // Single item
