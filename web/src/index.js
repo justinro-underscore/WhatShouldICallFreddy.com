@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Motion, spring, presets} from 'react-motion';
 import './index.css';
-import FreddyPic from './res/Freddy2.jpg';
 import LoadingSpinner from './res/loading.gif';
 
 function Header(props) {
@@ -27,7 +26,7 @@ function PollOptions(props) {
     <div className="poll-options-container" style={{transform: `rotate(${ props.rotation }deg)`}}>
       <p className="poll-option poll-option-yes" onClick={ () => props.voteFunc(true) }>YES</p>
       <hr className="poll-option-divider"/>
-      <p className="poll-option poll-option-new-pic">NEW PICTURE</p>
+      <p className="poll-option poll-option-new-pic" onClick={ () => props.newPicFunc() }>NEW PICTURE</p>
       <hr className="poll-option-divider"/>
       <p className="poll-option poll-option-no" onClick={ () => props.voteFunc(false) }>NO</p>
     </div>
@@ -44,6 +43,7 @@ class Poll extends React.Component {
     this.state = {
       name: "",
       nextNameIndex: 1,
+      currPicId: null,
       loading: true,
       rotation: 20
     };
@@ -55,6 +55,7 @@ class Poll extends React.Component {
    */
   componentDidMount() {
     this.fetchName();
+    this.fetchDogPictureId();
   }
 
   fetchName() {
@@ -80,6 +81,24 @@ class Poll extends React.Component {
       );
   }
 
+  fetchDogPictureId() {
+    fetch(`http://localhost:8080/dogpictures/randomid/${ this.state.currPicId ? this.state.currPicId + "/" : "" }`)
+      .then(
+        (res) => {
+          res.text().then(
+            (resjson) => {
+              console.log(resjson);
+              this.setState({
+                currPicId: JSON.parse(resjson)
+              });
+            },
+            (error) => this.apiError(error)
+          );
+        },
+        (error) => this.apiError(error)
+      );
+  }
+
   resetRotationInterval(startLeft) {
     this.setState({rotation: startLeft ? -20 : 20});
     this.rotationInterval = setInterval(() => this.setState({rotation: this.state.rotation === 20 ? -20 : 20}), 50);
@@ -88,7 +107,10 @@ class Poll extends React.Component {
   voteOnName(voteIsYes) {
     fetch(`http://localhost:8080/dognames/vote/${this.state.nextNameIndex - 1}/${voteIsYes}`, {method: 'POST'})
       .then(
-        (res) => this.fetchName(),
+        (res) => {
+          this.fetchName();
+          this.fetchDogPictureId();
+        },
         (error) => this.apiError(error)
       );
     this.resetRotationInterval(voteIsYes);
@@ -113,8 +135,8 @@ class Poll extends React.Component {
             <div style={{opacity: style.opacity}}>
               <p className="poll-header">Does this name fit?</p>
               <NameCard name={ this.state.name } rotation={ style.rot }/>
-              <img className="poll-img" src={FreddyPic} alt="Freddy Pic"></img>
-              <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } rotation={ style.rot }/>
+              <img className="poll-img" src={ `http://localhost:8080/dogpictures/${ this.state.currPicId }` } alt="Freddy Pic" />
+              <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } newPicFunc={ () => this.fetchDogPictureId() } rotation={ style.rot }/>
             </div>
           </div>
         )}
