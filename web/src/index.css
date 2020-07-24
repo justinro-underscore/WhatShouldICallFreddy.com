@@ -177,3 +177,30 @@ body {
 .new-name-form-api-res-error {
   color: #dd0000;
 }
+
+.results-chart-container {
+  border-radius: 20px;
+  background-color: #E1E1E1;
+  margin: auto;
+  padding: 20px 10px;
+  margin: 20px 0;
+}
+
+.results-chart-header {
+  font-size: 32px;
+  margin: 0;
+}
+
+.results-chart-subheader {
+  font-size: 24px;
+  margin: 10px;
+}
+
+.results-chart-refresh-btn {
+  border: none;
+  background-color: #FFFFFF00;
+  cursor: pointer;
+  position: absolute;
+  right: 20px;
+  font-size: 32px;
+}
