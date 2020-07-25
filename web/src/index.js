@@ -88,7 +88,6 @@ class Poll extends React.Component {
         (res) => {
           res.text().then(
             (resjson) => {
-              console.log(resjson);
               this.setState({
                 currPicId: JSON.parse(resjson)
               });
@@ -254,7 +253,7 @@ class NewNameForm extends React.Component {
       <div className="new-name-form">
         <form onSubmit={ (event) => this.handleSubmit(event) }>
           <label htmlFor="newName"><h2 className="new-name-form-header">Suggest a name!</h2></label>
-          {this.state.showInput ? "" : <img src={LoadingSpinner} className="new-name-form-loading-spinner" />}
+          {!this.state.showInput && <img src={LoadingSpinner} className="new-name-form-loading-spinner" />}
           <div className="new-name-form-input-container" style={{width: this.state.showInput ? "100%" : "0"}}>
             <input type="text" className="new-name-form-input" id="newName" value={ this.state.newName }
               placeholder="Enter a name..." onChange={ (event) => this.handleChange(event) } />
