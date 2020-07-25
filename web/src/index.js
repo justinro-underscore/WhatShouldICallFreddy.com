@@ -219,6 +219,7 @@ class NewNameForm extends React.Component {
     if (name !== "") {
       const regexName = new RegExp("^[A-Za-z0-9 ]+$");
       if (regexName.test(name)) {
+        name = name.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
         this.sendName(name);
         setTimeout(() => this.checkLoading(), this.LOADING_WAIT_MILLI_SEC);
       }
