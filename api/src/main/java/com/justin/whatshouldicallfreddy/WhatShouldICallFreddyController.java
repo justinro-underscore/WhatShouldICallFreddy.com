@@ -6,16 +6,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
-
 import com.justin.whatshouldicallfreddy.assemblers.DogNameModelAssembler;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameExistsException;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
 import com.justin.whatshouldicallfreddy.exceptions.DogPictureNotFoundException;
 import com.justin.whatshouldicallfreddy.models.DogName;
 import com.justin.whatshouldicallfreddy.models.DogPicture;
+import com.justin.whatshouldicallfreddy.models.User;
 import com.justin.whatshouldicallfreddy.repos.DogNameRepository;
 import com.justin.whatshouldicallfreddy.repos.DogPictureRepository;
+import com.justin.whatshouldicallfreddy.repos.UserRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +42,14 @@ public class WhatShouldICallFreddyController {
   private final DogNameRepository dogNameRepository;
   private final DogNameModelAssembler dogNameAssembler;
   private final DogPictureRepository dogPictureRepository;
+  private final UserRepository userRepository;
   private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
-  public WhatShouldICallFreddyController(DogNameRepository dogNameRepository, DogNameModelAssembler dogNameAssembler, DogPictureRepository dogPictureRepository) {
+  public WhatShouldICallFreddyController(DogNameRepository dogNameRepository, DogNameModelAssembler dogNameAssembler, DogPictureRepository dogPictureRepository, UserRepository userRepository) {
     this.dogNameRepository = dogNameRepository;
     this.dogNameAssembler = dogNameAssembler;
     this.dogPictureRepository = dogPictureRepository;
+    this.userRepository = userRepository;
   }
 
   // Dog Names
@@ -214,5 +216,14 @@ public class WhatShouldICallFreddyController {
 
     log.info("GET " + "/dogpictures/randomid/" + id + "/ " + "Retrieving random ID that is not " + id + ", retrieved " + dogPictureIDs.get(0));
     return randomID;
+  }
+
+  // Users
+
+  @PostMapping("/user")
+  public Long registerNewUser() {
+    User user = this.userRepository.save(new User());
+    log.info("POST " + "/user " + "Registering new user " + user);
+    return user.getId();
   }
 }
