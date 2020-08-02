@@ -1,12 +1,9 @@
 package com.justin.whatshouldicallfreddy;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.justin.whatshouldicallfreddy.assemblers.DogNameModelAssembler;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameExistsException;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
 import com.justin.whatshouldicallfreddy.exceptions.DogPictureNotFoundException;
@@ -20,8 +17,6 @@ import com.justin.whatshouldicallfreddy.repos.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
@@ -41,14 +36,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WhatShouldICallFreddyController {
   private final DogNameRepository dogNameRepository;
-  private final DogNameModelAssembler dogNameAssembler;
   private final DogPictureRepository dogPictureRepository;
   private final UserRepository userRepository;
   private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
-  public WhatShouldICallFreddyController(DogNameRepository dogNameRepository, DogNameModelAssembler dogNameAssembler, DogPictureRepository dogPictureRepository, UserRepository userRepository) {
+  public WhatShouldICallFreddyController(DogNameRepository dogNameRepository, DogPictureRepository dogPictureRepository, UserRepository userRepository) {
     this.dogNameRepository = dogNameRepository;
-    this.dogNameAssembler = dogNameAssembler;
     this.dogPictureRepository = dogPictureRepository;
     this.userRepository = userRepository;
   }
@@ -61,14 +54,11 @@ public class WhatShouldICallFreddyController {
   // Dog Names
 
   @GetMapping("/dognames")
-  public CollectionModel<EntityModel<DogName>> allDogNames() {
-    List<EntityModel<DogName>> dogNames = dogNameRepository.findAll().stream()
-      .map(dogNameAssembler::toModel).collect(Collectors.toList());
+  public List<DogName> allDogNames() {
+    List<DogName> dogNames = dogNameRepository.findAll();
 
     log.info("GET " + "/dognames " + "Retrieving " + dogNames.size() + " names");
-    return CollectionModel.of(dogNames,
-      linkTo(methodOn(WhatShouldICallFreddyController.class).allDogNames()).withSelfRel()
-    );
+    return dogNames;
   }
 
   @PostMapping("/dognames")
@@ -85,14 +75,10 @@ public class WhatShouldICallFreddyController {
   // Single item
 
   @GetMapping("/dognames/{id}")
-  public EntityModel<DogName> oneDogName(@PathVariable Long id, @CookieValue("user") String userCookies) {
+  public DogName oneDogName(@PathVariable Long id, @CookieValue("user") String userCookies) {
     DogName dogName = dogNameRepository.findById(id).orElseThrow(() -> new DogNameNotFoundException(id));
     log.info("GET " + "/dognames/" + id + "/ " + "Retrieving " + dogName);
-    return EntityModel.of(dogName,
-      // linkTo(methodOn(WhatShouldICallFreddyController.class).oneDogName(dogName.getId())).withSelfRel(),
-      // linkTo(methodOn(WhatShouldICallFreddyController.class).dogNameVote(dogName.getId(), true)).withRel("dognames/vote"),
-      linkTo(methodOn(WhatShouldICallFreddyController.class).allDogNames()).withRel("dognames")
-    );
+    return dogName;
   }
 
   @PutMapping("/dognames/{id}")
@@ -119,8 +105,8 @@ public class WhatShouldICallFreddyController {
   // Increase votes
 
   @PostMapping("/dognames/vote/{id}/{vote}")
-  public EntityModel<DogName> dogNameVote(@PathVariable Long id, @PathVariable Boolean vote, @CookieValue("user") String userCookies) {
-    DogName dogName = dogNameRepository.findById(id).map(dn -> {
+  public DogName dogNameVote(@PathVariable Long id, @PathVariable Boolean vote, @CookieValue("user") String userCookies) {
+    return dogNameRepository.findById(id).map(dn -> {
       log.info("POST " + "/dognames/vote/" + id + "/" + vote + "/ " + "Increasing " + (vote ? "yes" : "no") + " votes for " + dn);
       if (vote) {
         dn.incYesVotes();
@@ -130,11 +116,6 @@ public class WhatShouldICallFreddyController {
       }
       return dogNameRepository.save(dn);
     }).orElseThrow(() -> new DogNameNotFoundException(id));
-    return EntityModel.of(dogName,
-      // linkTo(methodOn(WhatShouldICallFreddyController.class).dogNameVote(dogName.getId(), vote)).withSelfRel(),
-      // linkTo(methodOn(WhatShouldICallFreddyController.class).oneDogName(dogName.getId())).withRel("dognames/" + id),
-      linkTo(methodOn(WhatShouldICallFreddyController.class).allDogNames()).withRel("dognames")
-    );
   }
 
   // Dog Pictures
