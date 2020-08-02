@@ -1,8 +1,6 @@
 package com.justin.whatshouldicallfreddy;
 
 import java.io.File;
-import java.io.IOError;
-import java.io.IOException;
 
 import com.justin.whatshouldicallfreddy.models.DogName;
 import com.justin.whatshouldicallfreddy.models.DogPicture;
