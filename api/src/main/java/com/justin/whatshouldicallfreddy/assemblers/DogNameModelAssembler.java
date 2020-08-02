@@ -14,7 +14,7 @@ public class DogNameModelAssembler implements RepresentationModelAssembler<DogNa
   @Override
   public EntityModel<DogName> toModel(DogName dogName) {
     return EntityModel.of(dogName,
-      linkTo(methodOn(WhatShouldICallFreddyController.class).oneDogName(dogName.getId())).withSelfRel(),
+      // linkTo(methodOn(WhatShouldICallFreddyController.class).oneDogName(dogName.getId())).withSelfRel(),
       linkTo(methodOn(WhatShouldICallFreddyController.class).allDogNames()).withRel("dognames")
     );
   }

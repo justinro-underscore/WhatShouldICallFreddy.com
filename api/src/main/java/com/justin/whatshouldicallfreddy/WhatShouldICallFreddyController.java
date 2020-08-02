@@ -25,6 +25,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true") // TODO Make this legit
 @RestController
 public class WhatShouldICallFreddyController {
   private final DogNameRepository dogNameRepository;
@@ -50,6 +51,11 @@ public class WhatShouldICallFreddyController {
     this.dogNameAssembler = dogNameAssembler;
     this.dogPictureRepository = dogPictureRepository;
     this.userRepository = userRepository;
+  }
+
+  @GetMapping("/heartbeat")
+  public Long heartbeat() {
+    return Long.valueOf(1);
   }
 
   // Dog Names
@@ -66,7 +72,7 @@ public class WhatShouldICallFreddyController {
   }
 
   @PostMapping("/dognames")
-  public DogName newDogName(@RequestBody DogName newDogName) {
+  public DogName newDogName(@RequestBody DogName newDogName, @CookieValue("user") String userCookies) {
     if (dogNameRepository.countByName(newDogName.getName()) == 0) {
       DogName dogName = dogNameRepository.save(newDogName);
       log.info("POST " + "/dognames " + "Saving " + dogName);
@@ -79,12 +85,12 @@ public class WhatShouldICallFreddyController {
   // Single item
 
   @GetMapping("/dognames/{id}")
-  public EntityModel<DogName> oneDogName(@PathVariable Long id) {
+  public EntityModel<DogName> oneDogName(@PathVariable Long id, @CookieValue("user") String userCookies) {
     DogName dogName = dogNameRepository.findById(id).orElseThrow(() -> new DogNameNotFoundException(id));
     log.info("GET " + "/dognames/" + id + "/ " + "Retrieving " + dogName);
     return EntityModel.of(dogName,
-      linkTo(methodOn(WhatShouldICallFreddyController.class).oneDogName(dogName.getId())).withSelfRel(),
-      linkTo(methodOn(WhatShouldICallFreddyController.class).dogNameVote(dogName.getId(), true)).withRel("dognames/vote"),
+      // linkTo(methodOn(WhatShouldICallFreddyController.class).oneDogName(dogName.getId())).withSelfRel(),
+      // linkTo(methodOn(WhatShouldICallFreddyController.class).dogNameVote(dogName.getId(), true)).withRel("dognames/vote"),
       linkTo(methodOn(WhatShouldICallFreddyController.class).allDogNames()).withRel("dognames")
     );
   }
@@ -113,7 +119,7 @@ public class WhatShouldICallFreddyController {
   // Increase votes
 
   @PostMapping("/dognames/vote/{id}/{vote}")
-  public EntityModel<DogName> dogNameVote(@PathVariable Long id, @PathVariable Boolean vote) {
+  public EntityModel<DogName> dogNameVote(@PathVariable Long id, @PathVariable Boolean vote, @CookieValue("user") String userCookies) {
     DogName dogName = dogNameRepository.findById(id).map(dn -> {
       log.info("POST " + "/dognames/vote/" + id + "/" + vote + "/ " + "Increasing " + (vote ? "yes" : "no") + " votes for " + dn);
       if (vote) {
@@ -125,8 +131,8 @@ public class WhatShouldICallFreddyController {
       return dogNameRepository.save(dn);
     }).orElseThrow(() -> new DogNameNotFoundException(id));
     return EntityModel.of(dogName,
-      linkTo(methodOn(WhatShouldICallFreddyController.class).dogNameVote(dogName.getId(), vote)).withSelfRel(),
-      linkTo(methodOn(WhatShouldICallFreddyController.class).oneDogName(dogName.getId())).withRel("dognames/" + id),
+      // linkTo(methodOn(WhatShouldICallFreddyController.class).dogNameVote(dogName.getId(), vote)).withSelfRel(),
+      // linkTo(methodOn(WhatShouldICallFreddyController.class).oneDogName(dogName.getId())).withRel("dognames/" + id),
       linkTo(methodOn(WhatShouldICallFreddyController.class).allDogNames()).withRel("dognames")
     );
   }
