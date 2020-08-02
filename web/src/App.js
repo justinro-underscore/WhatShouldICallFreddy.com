@@ -312,7 +312,7 @@ class ColumnChart extends React.Component {
 
   formatOptions(jsonData) {
     const NUM_DOG_NAMES_SHOWN = 10;
-    let dogNameList = jsonData._embedded.dogNameList.slice(0, NUM_DOG_NAMES_SHOWN);
+    let dogNameList = jsonData.slice(0, NUM_DOG_NAMES_SHOWN);
     dogNameList.sort((a, b) => b.yesVotes - a.yesVotes);
     let yesVotesDataPoints = dogNameList.map(dogName => {
       return {label: dogName.name, y: dogName.yesVotes }
