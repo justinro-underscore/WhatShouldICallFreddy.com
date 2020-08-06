@@ -8,10 +8,8 @@ import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
 import com.justin.whatshouldicallfreddy.exceptions.DogPictureNotFoundException;
 import com.justin.whatshouldicallfreddy.models.DogName;
 import com.justin.whatshouldicallfreddy.models.DogPicture;
-import com.justin.whatshouldicallfreddy.models.User;
 import com.justin.whatshouldicallfreddy.repos.DogNameRepository;
 import com.justin.whatshouldicallfreddy.repos.DogPictureRepository;
-import com.justin.whatshouldicallfreddy.repos.UserRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +34,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class WhatShouldICallFreddyController {
   private final DogNameRepository dogNameRepository;
   private final DogPictureRepository dogPictureRepository;
-  private final UserRepository userRepository;
   private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
-  public WhatShouldICallFreddyController(DogNameRepository dogNameRepository, DogPictureRepository dogPictureRepository, UserRepository userRepository) {
+  public WhatShouldICallFreddyController(DogNameRepository dogNameRepository, DogPictureRepository dogPictureRepository) {
     this.dogNameRepository = dogNameRepository;
     this.dogPictureRepository = dogPictureRepository;
-    this.userRepository = userRepository;
   }
 
   @GetMapping("/heartbeat")
@@ -202,14 +198,5 @@ public class WhatShouldICallFreddyController {
 
     log.info("GET " + "/dogpictures/randomid/" + id + "/ " + "Retrieving random ID that is not " + id + ", retrieved " + dogPictureIDs.get(0));
     return randomID;
-  }
-
-  // Users
-
-  @PostMapping("/user")
-  public Long registerNewUser() {
-    User user = this.userRepository.save(new User());
-    log.info("POST " + "/user " + "Registering new user " + user);
-    return user.getId();
   }
 }
