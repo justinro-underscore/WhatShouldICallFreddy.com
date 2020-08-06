@@ -41,12 +41,14 @@ class Poll extends React.Component {
    */
   constructor(props) {
     super(props);
+    this.cookies = this.props.cookies;
+    const namesSeen = this.cookies.get("namesSeen");
     this.state = {
       name: "",
-      nextNameIndex: 1,
       currPicId: null,
       loading: true,
-      rotation: 20
+      rotation: 20,
+      namesSeen: namesSeen
     };
     this.rotationInterval = setInterval(() => this.setState({rotation: -20}), 50);
   }
@@ -59,15 +61,33 @@ class Poll extends React.Component {
     this.fetchDogPictureId();
   }
 
+  addNameSeen(id) {
+    let namesSeen = []
+    if (this.state.namesSeen) {
+      namesSeen = this.state.namesSeen.split(",");;
+    }
+    namesSeen.push(id);
+    const namesSeenStr = namesSeen.toString();
+
+    let expiration = new Date();
+    const EXPIRATION_TIME_MINUTES = 60 * 24 * 14; // 2 weeks
+    expiration.setTime(expiration.getTime() + (EXPIRATION_TIME_MINUTES * 60 * 1000));
+    this.cookies.set("namesSeen", namesSeenStr, {
+      path: "/",
+      expires: expiration
+    });
+    this.setState({ namesSeen: namesSeenStr });
+  }
+
   fetchName() {
-    fetch(`http://localhost:8080/dognames/${ this.state.nextNameIndex }`, {credentials: "include"})
+    fetch(`http://localhost:8080/dognames/one`, {credentials: "include"})
       .then(
         (res) => {
           res.json().then(
             (resjson) => {
+              this.addNameSeen(resjson.id);
               this.setState({
                 name: resjson.name,
-                nextNameIndex: this.state.nextNameIndex + 1,
                 loading: false
               });
               setTimeout(() => {
@@ -395,11 +415,9 @@ class Body extends React.Component {
   constructor(props) {
     super(props);
     this.cookies = this.props.cookies;
-    const user = this.cookies.get("user");
     this.state = {
       loading: true,
-      error: null,
-      user: user
+      error: null
     }
   }
 
@@ -407,44 +425,7 @@ class Body extends React.Component {
     try {
       fetch("http://localhost:8080/heartbeat")
         .then(
-          (res) => {
-            if (!this.state.user) {
-              this.getNewUserCookie();
-            }
-            else {
-              this.setState({ loading: false });
-            }
-          },
-          (error) => this.apiError(error)
-        );
-    }
-    catch (e) {
-      this.apiError(e);
-    }
-  }
-
-  getNewUserCookie() {
-    try {
-      fetch("http://localhost:8080/user", { method: 'POST' })
-        .then(
-          (res) => {
-            res.text().then(
-              (text) => {
-                let expiration = new Date();
-                const EXPIRATION_TIME_MINUTES = 60 * 24 * 14; // 2 weeks
-                expiration.setTime(expiration.getTime() + (EXPIRATION_TIME_MINUTES * 60 * 1000));
-                this.cookies.set("user", text, {
-                  path: "/",
-                  expires: expiration
-                });
-                this.setState({
-                  loading: false,
-                  user: text
-                });
-              },
-              (error) => this.apiError(error)
-            );
-          },
+          (res) => this.setState({ loading: false }),
           (error) => this.apiError(error)
         );
     }
@@ -481,7 +462,7 @@ class Body extends React.Component {
     else {
       return (
         <div>
-          <Poll />
+          <Poll cookies={ this.cookies }/>
           <NewNameForm />
           <ColumnChart />
         </div>
