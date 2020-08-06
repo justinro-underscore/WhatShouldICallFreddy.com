@@ -1,12 +1,15 @@
 package com.justin.whatshouldicallfreddy;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import com.justin.whatshouldicallfreddy.exceptions.DogNameExistsException;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
 import com.justin.whatshouldicallfreddy.exceptions.DogPictureNotFoundException;
 import com.justin.whatshouldicallfreddy.models.DogName;
+import com.justin.whatshouldicallfreddy.models.DogName.DogNameSorter;
 import com.justin.whatshouldicallfreddy.models.DogPicture;
 import com.justin.whatshouldicallfreddy.repos.DogNameRepository;
 import com.justin.whatshouldicallfreddy.repos.DogPictureRepository;
@@ -48,7 +51,7 @@ public class WhatShouldICallFreddyController {
 
   // Dog Names
 
-  @GetMapping("/dognames")
+  @RequestMapping(value={"/dognames", "/dognames/all"})
   public List<DogName> allDogNames() {
     List<DogName> dogNames = dogNameRepository.findAll();
 
@@ -56,8 +59,36 @@ public class WhatShouldICallFreddyController {
     return dogNames;
   }
 
+  @GetMapping("/dognames/one")
+  public DogName oneDogName(@CookieValue(value="namesSeen", required=false) String namesSeenString) {
+    Long[] namesSeen = new Long[0];
+    if (namesSeenString != null) {
+      String[] names = namesSeenString.split(",");
+      namesSeen = new Long[names.length];
+      for (int i = 0; i < names.length; i++) {
+        namesSeen[i] = Long.valueOf(names[i]);
+      }
+    }
+    Object[] dogNamesObjArr = dogNameRepository.getDogNamesNotInList(namesSeen).toArray();
+    if (dogNamesObjArr.length > 0) {
+      DogName[] dogNames = Arrays.copyOf(dogNamesObjArr, dogNamesObjArr.length, DogName[].class);
+
+      Arrays.sort(dogNames, new DogNameSorter());
+
+      int dogNamesRandMax = 3;
+      if (dogNames.length < 3) {
+        dogNamesRandMax = dogNames.length;
+      }
+      int index = (new Random()).nextInt(dogNamesRandMax);
+
+      log.info("GET " + "/dognames/one " + "Retrieving " + dogNames[index]);
+      return dogNames[index];
+    }
+    return null; // TODO Replace with an error
+  }
+
   @PostMapping("/dognames")
-  public DogName newDogName(@RequestBody DogName newDogName, @CookieValue("user") String userCookies) {
+  public DogName newDogName(@RequestBody DogName newDogName) {
     if (dogNameRepository.countByName(newDogName.getName()) == 0) {
       DogName dogName = dogNameRepository.save(newDogName);
       log.info("POST " + "/dognames " + "Saving " + dogName);
@@ -70,7 +101,7 @@ public class WhatShouldICallFreddyController {
   // Single item
 
   @GetMapping("/dognames/{id}")
-  public DogName oneDogName(@PathVariable Long id, @CookieValue("user") String userCookies) {
+  public DogName dogNameWithId(@PathVariable Long id) {
     DogName dogName = dogNameRepository.findById(id).orElseThrow(() -> new DogNameNotFoundException(id));
     log.info("GET " + "/dognames/" + id + "/ " + "Retrieving " + dogName);
     return dogName;
@@ -100,7 +131,7 @@ public class WhatShouldICallFreddyController {
   // Increase votes
 
   @PostMapping("/dognames/vote/{id}/{vote}")
-  public DogName dogNameVote(@PathVariable Long id, @PathVariable Boolean vote, @CookieValue("user") String userCookies) {
+  public DogName dogNameVote(@PathVariable Long id, @PathVariable Boolean vote) {
     return dogNameRepository.findById(id).map(dn -> {
       log.info("POST " + "/dognames/vote/" + id + "/" + vote + "/ " + "Increasing " + (vote ? "yes" : "no") + " votes for " + dn);
       if (vote) {

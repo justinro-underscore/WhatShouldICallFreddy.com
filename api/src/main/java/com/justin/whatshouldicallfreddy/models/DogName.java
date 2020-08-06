@@ -1,5 +1,6 @@
 package com.justin.whatshouldicallfreddy.models;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 import javax.persistence.Entity;
@@ -12,6 +13,16 @@ public class DogName {
   private String name;
   private int yesVotes;
   private int noVotes;
+
+  public static class DogNameSorter implements Comparator<DogName> {
+    public int compare(DogName a, DogName b) {
+      int numVotes = a.getTotalVotes() - b.getTotalVotes();
+      if (numVotes != 0) {
+        return numVotes;
+      }
+      return (int)(a.getId() - b.getId());
+    }
+  }
 
   public DogName() {}
 
@@ -39,6 +50,10 @@ public class DogName {
 
   public int getNoVotes() {
     return this.noVotes;
+  }
+
+  public int getTotalVotes() {
+    return this.yesVotes + this.noVotes;
   }
 
   public void setId(Long id) {
