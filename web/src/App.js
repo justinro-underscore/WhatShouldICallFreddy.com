@@ -45,6 +45,7 @@ class Poll extends React.Component {
     const namesSeen = this.cookies.get("namesSeen");
     this.state = {
       name: "",
+      currId: null,
       currPicId: null,
       loading: true,
       rotation: 20,
@@ -85,9 +86,9 @@ class Poll extends React.Component {
         (res) => {
           res.json().then(
             (resjson) => {
-              this.addNameSeen(resjson.id);
               this.setState({
                 name: resjson.name,
+                currId: resjson.id,
                 loading: false
               });
               setTimeout(() => {
@@ -125,9 +126,10 @@ class Poll extends React.Component {
   }
 
   voteOnName(voteIsYes) {
-    fetch(`http://localhost:8080/dognames/vote/${this.state.nextNameIndex - 1}/${voteIsYes}`, {method: 'POST', credentials: "include"})
+    fetch(`http://localhost:8080/dognames/vote/${ this.state.currId }/${voteIsYes}`, {method: 'POST', credentials: "include"})
       .then(
         (res) => {
+          this.addNameSeen(this.state.currId);
           this.fetchName();
           this.fetchDogPictureId();
         },
