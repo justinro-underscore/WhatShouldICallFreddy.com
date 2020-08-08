@@ -47,6 +47,7 @@ class Poll extends React.Component {
       name: "",
       currId: null,
       currPicId: null,
+      allNamesSeen: false,
       loading: true,
       rotation: 20,
       namesSeen: namesSeen
@@ -84,20 +85,25 @@ class Poll extends React.Component {
     fetch(`http://localhost:8080/dognames/one`, {credentials: "include"})
       .then(
         (res) => {
-          res.json().then(
-            (resjson) => {
-              this.setState({
-                name: resjson.name,
-                currId: resjson.id,
-                loading: false
-              });
-              setTimeout(() => {
-                clearInterval(this.rotationInterval);
-                this.setState({rotation: 0});
-              }, 100);
-            },
-            (error) => this.apiError(error)
-          );
+          if (res.status === 200) {
+            res.json().then(
+              (resjson) => {
+                this.setState({
+                  name: resjson.name,
+                  currId: resjson.id,
+                  loading: false
+                });
+                setTimeout(() => {
+                  clearInterval(this.rotationInterval);
+                  this.setState({rotation: 0});
+                }, 100);
+              },
+              (error) => this.apiError(error)
+            );
+          }
+          else if (res.status === 204) {
+            this.setState({ allNamesSeen: true });
+          }
         },
         (error) => this.apiError(error)
       );
@@ -154,12 +160,19 @@ class Poll extends React.Component {
       >
         {style => (
           <div className="poll-container">
-            <div style={{opacity: style.opacity}}>
-              <p className="poll-header">Does this name fit?</p>
-              <NameCard name={ this.state.name } rotation={ style.rot }/>
-              {this.state.currPicId ? <img className="poll-img" src={ `http://localhost:8080/dogpictures/${ this.state.currPicId }` } alt="Freddy Pic" /> : <img src={LoadingSpinner} />}
-              <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } newPicFunc={ () => this.fetchDogPictureId() } rotation={ style.rot }/>
-            </div>
+            {!this.state.allNamesSeen
+              ? <div style={{opacity: style.opacity, marginBottom: "20px"}}>
+                  <p className="poll-header">Does this name fit?</p>
+                  <NameCard name={ this.state.name } rotation={ style.rot }/>
+                  {this.state.currPicId ? <img className="poll-img" src={ `http://localhost:8080/dogpictures/${ this.state.currPicId }` } alt="Freddy Pic" /> : <img src={LoadingSpinner} />}
+                  <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } newPicFunc={ () => this.fetchDogPictureId() } rotation={ style.rot }/>
+                </div>
+              : <p className="poll-header">
+                  All dog names seen!<br />
+                  Maybe submit a few?
+                </p>
+            }
+            
           </div>
         )}
       </Motion>
