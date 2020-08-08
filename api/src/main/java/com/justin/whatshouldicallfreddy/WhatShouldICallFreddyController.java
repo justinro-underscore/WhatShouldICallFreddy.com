@@ -8,6 +8,7 @@ import java.util.Random;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameExistsException;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
 import com.justin.whatshouldicallfreddy.exceptions.DogPictureNotFoundException;
+import com.justin.whatshouldicallfreddy.exceptions.NoDogNamesRemainingException;
 import com.justin.whatshouldicallfreddy.models.DogName;
 import com.justin.whatshouldicallfreddy.models.DogName.DogNameSorter;
 import com.justin.whatshouldicallfreddy.models.DogPicture;
@@ -84,7 +85,7 @@ public class WhatShouldICallFreddyController {
       log.info("GET " + "/dognames/one " + "Retrieving " + dogNames[index]);
       return dogNames[index];
     }
-    return null; // TODO Replace with an error
+    throw new NoDogNamesRemainingException();
   }
 
   @PostMapping("/dognames")
