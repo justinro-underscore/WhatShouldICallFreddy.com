@@ -170,7 +170,7 @@ class Poll extends React.Component {
                     ? <div className="poll-img-wrapper" style={{maskImage: this.state.picHeightOverflow ? `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))` : "none"}}>
                         <img className="poll-img" src={ `http://localhost:8080/dogpictures/${ this.state.currPicId }` } alt="Freddy Pic" />
                       </div>
-                    : <img src={LoadingSpinner} />}
+                    : <img src={LoadingSpinner} alt="Loading..." />}
                   <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } newPicFunc={ () => this.fetchDogPictureId() } rotation={ style.rot }/>
                 </div>
               : <p className="poll-header">
@@ -296,7 +296,7 @@ class NewNameForm extends React.Component {
       <div className="new-name-form">
         <form onSubmit={ (event) => this.handleSubmit(event) }>
           <label htmlFor="newName"><h2 className="new-name-form-header">Suggest a name!</h2></label>
-          {!this.state.showInput && <img src={LoadingSpinner} className="new-name-form-loading-spinner" />}
+          {!this.state.showInput && <img src={LoadingSpinner} className="new-name-form-loading-spinner" alt="Loading..." />}
           <div className="new-name-form-input-container" style={{width: this.state.showInput ? "100%" : "0"}}>
             <input type="text" className="new-name-form-input" id="newName" value={ this.state.newName }
               placeholder="Enter a name..." onChange={ (event) => this.handleChange(event) } />
@@ -425,7 +425,7 @@ class ColumnChart extends React.Component {
               <p className="results-chart-subheader">Current Winner: <b>{ this.state.currWinner }</b></p>
               <CanvasJSReact.CanvasJSChart options={ this.state.options } />
             </div>
-          : <img src={LoadingSpinner} />
+          : <img src={LoadingSpinner} alt="Loading..." />
          }
       </div>
     );
@@ -469,7 +469,7 @@ class Body extends React.Component {
 
   render() {
     if (this.state.loading) {
-      return <img src={LoadingSpinner} />;
+      return <img src={LoadingSpinner} alt="Loading..." />;
     }
     else if (this.state.error) {
       return (
