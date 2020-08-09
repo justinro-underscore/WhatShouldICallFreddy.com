@@ -48,11 +48,14 @@ class DogPicture extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.picture && (!this.state.currPic || (nextProps.picture.id !== this.state.currPicId))) {
       const newPicture = nextProps.picture;
-      const factor = this.wrapperWidth / newPicture.normalizedWidth;
-      const height = factor * newPicture.normalizedHeight;
-      const width = factor * newPicture.normalizedWidth;
-      const centerY = factor * newPicture.normalizedCenterY;
-      const centerX = factor * newPicture.normalizedCenterX;
+      const widthFactor = this.wrapperWidth / newPicture.normalizedWidth;
+      const height = widthFactor * newPicture.normalizedHeight;
+      const centerY = widthFactor * newPicture.normalizedCenterY;
+
+      const heightFactor = this.MAX_IMAGE_HEIGHT_PX / newPicture.normalizedHeight;
+      const width = heightFactor * newPicture.normalizedWidth;
+      const centerX = heightFactor * newPicture.normalizedCenterX;
+      console.log(width, this.wrapperWidth);
 
       const picHeightOverflow = height > this.MAX_IMAGE_HEIGHT_PX;
       let yOffset = 0;
