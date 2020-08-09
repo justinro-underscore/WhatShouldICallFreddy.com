@@ -55,11 +55,11 @@ public class DogPicture {
     return this.normalizedHeight;
   }
 
-  public int getNormalizeCenterX() {
+  public int getNormalizedCenterX() {
     return this.normalizedCenterX;
   }
 
-  public int getNormalizeCenterY() {
+  public int getNormalizedCenterY() {
     return this.normalizedCenterY;
   }
 
