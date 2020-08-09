@@ -10,7 +10,4 @@ import org.springframework.data.jpa.repository.Query;
 public interface DogPictureRepository extends JpaRepository<DogPicture, Long> {
   @Query(value="SELECT d FROM DogPicture d order by function('RAND')")
   List<DogPicture> getRandomDogPictures();
-
-  @Query(value="SELECT id FROM DogPicture d order by function('RAND')")
-  List<Long> getRandomDogPictureIDs();
 }

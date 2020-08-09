@@ -212,23 +212,39 @@ public class WhatShouldICallFreddyController {
       .body(bytes);
   }
 
-  @GetMapping("/dogpictures/randomid")
-  public Long getRandomDogPictureID() {
-    List<Long> dogPictureIDs = dogPictureRepository.getRandomDogPictureIDs();
+  @GetMapping("/dogpictures/info")
+  public List<DogPicture> getDogPicturesInfo() {
+    List<DogPicture> dogPictures = dogPictureRepository.findAll();
 
-    log.info("GET " + "/dogpictures/randomid/ " + "Retrieving random ID " + dogPictureIDs.get(0));
-    return dogPictureIDs.get(0);
+    log.info("GET " + "/dogpictures/info/ " + "Retrieving info for " + dogPictures.size() + " dog pictures");
+    return dogPictures;
   }
 
-  @GetMapping("/dogpictures/randomid/{id}")
-  public Long getRandomDogPictureID(@PathVariable Long id) {
-    List<Long> dogPictureIDs = dogPictureRepository.getRandomDogPictureIDs();
-    Long randomID = dogPictureIDs.get(0);
-    if (randomID == id) {
-      randomID = dogPictureIDs.get(1);
+  @GetMapping("/dogpictures/info/{id}")
+  public DogPicture getDogPictureInfoForId(@PathVariable Long id) {
+    DogPicture dogPicture = dogPictureRepository.findById(id).orElseThrow(() -> new DogPictureNotFoundException(id));
+
+    log.info("GET " + "/dogpictures/info/" + id + "/ " + "Retrieving info for " + dogPicture);
+    return dogPicture;
+  }
+
+  @GetMapping("/dogpictures/info/random")
+  public DogPicture getRandomDogPictureInfo() {
+    DogPicture dogPicture = dogPictureRepository.getRandomDogPictures().get(0);
+
+    log.info("GET " + "/dogpictures/info/random/ " + "Retrieving random info for " + dogPicture);
+    return dogPicture;
+  }
+
+  @GetMapping("/dogpictures/info/random/{id}")
+  public DogPicture getRandomDogPictureInfoWithoutId(@PathVariable Long id) {
+    List<DogPicture> dogPictures = dogPictureRepository.getRandomDogPictures();
+    DogPicture randomPicture = dogPictures.get(0);
+    if (randomPicture.getId() == id) {
+      randomPicture = dogPictures.get(1);
     }
 
-    log.info("GET " + "/dogpictures/randomid/" + id + "/ " + "Retrieving random ID that is not " + id + ", retrieved " + dogPictureIDs.get(0));
-    return randomID;
+    log.info("GET " + "/dogpictures/info/random/" + id + "/ " + "Retrieving random info for dog picture that does not have id " + id + ", retrieved " + randomPicture);
+    return randomPicture;
   }
 }

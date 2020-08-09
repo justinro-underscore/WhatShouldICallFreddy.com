@@ -14,11 +14,12 @@ import java.util.Objects;
 public class DogPicture {
   private @Id @GeneratedValue Long id;
   private String fileName;
+  private int normalizedWidth;
   private int normalizedHeight;
   private int normalizedCenterX;
   private int normalizedCenterY;
 
-  final private double MAX_WIDTH_PX = 900; // This is hardcoded, discovered from the front end
+  final private double NORMALIZED_WIDTH_PX = 1000; // Aribitrary normalized width
   
   public DogPicture() {}
 
@@ -29,7 +30,8 @@ public class DogPicture {
       int width = img.getWidth();
       int height = img.getHeight();
 
-      double factor = MAX_WIDTH_PX / width;
+      double factor = NORMALIZED_WIDTH_PX / width;
+      this.normalizedWidth = (int)NORMALIZED_WIDTH_PX;
       this.normalizedHeight = (int)Math.floor(factor * height);
       this.normalizedCenterX = (int)Math.floor(factor * centerX);
       this.normalizedCenterY = (int)Math.floor(factor * centerY);
@@ -43,6 +45,10 @@ public class DogPicture {
 
   public String getFileName() {
     return this.fileName;
+  }
+
+  public int getNormalizedWidth() {
+    return this.normalizedWidth;
   }
 
   public int getNormalizedHeight() {
@@ -65,6 +71,10 @@ public class DogPicture {
     this.fileName = fileName;
   }
 
+  public void setNormalizedWidth(int normalizedWidth) {
+    this.normalizedWidth = normalizedWidth;
+  }
+
   public void setNormalizedHeight(int normalizedHeight) {
     this.normalizedHeight = normalizedHeight;
   }
@@ -84,18 +94,19 @@ public class DogPicture {
     if (!(o instanceof DogPicture))
       return false;
     DogPicture dogPicture = (DogPicture) o;
-    return Objects.equals(this.id, dogPicture.id) && Objects.equals(this.fileName, dogPicture.fileName) && Objects.equals(this.normalizedHeight, dogPicture.normalizedHeight)
+    return Objects.equals(this.id, dogPicture.id) && Objects.equals(this.fileName, dogPicture.fileName) 
+      && Objects.equals(this.normalizedWidth, dogPicture.normalizedWidth) && Objects.equals(this.normalizedHeight, dogPicture.normalizedHeight)
       && Objects.equals(this.normalizedCenterX, dogPicture.normalizedCenterX) && Objects.equals(this.normalizedCenterY, dogPicture.normalizedCenterY);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.id, this.fileName, this.normalizedHeight, this.normalizedCenterX, this.normalizedCenterY);
+    return Objects.hash(this.id, this.fileName, this.normalizedWidth, this.normalizedHeight, this.normalizedCenterX, this.normalizedCenterY);
   }
 
   @Override
   public String toString() {
-    return "DogPicture {" + "id=" + this.id + ", fileName='" + this.fileName + "', normalizedHeight=" + this.normalizedHeight +
+    return "DogPicture {" + "id=" + this.id + ", fileName='" + this.fileName + "', normalizedWidth=" + this.normalizedWidth + ", normalizedHeight=" + this.normalizedHeight +
       ", normalizedCenterX: " + this.normalizedCenterX + ", normalizedCenterY: " + this.normalizedCenterY + "}";
   }
 }
