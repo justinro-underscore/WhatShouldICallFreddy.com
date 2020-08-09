@@ -28,7 +28,7 @@ class DogPicture extends React.Component {
     this.MAX_IMAGE_HEIGHT_PX = 800;
     this.state = {
       currPic: null,
-      currPictureId: null,
+      currPicId: null,
       picHeightOverflow: false,
       picWidthOverflow: false, // TODO Add this functionality
       picYOffset: 0, // Must always be nonnegative
@@ -47,7 +47,7 @@ class DogPicture extends React.Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.picture && (!this.state.currPictureId || (nextProps.picture.id !== this.state.currPictureId))) {
+    if (nextProps.picture && (!this.state.currPic || (nextProps.picture.id !== this.state.currPicId))) {
       const newPicture = nextProps.picture;
       const factor = this.wrapperWidth / newPicture.normalizedWidth;
       const height = factor * newPicture.normalizedHeight;
@@ -56,7 +56,6 @@ class DogPicture extends React.Component {
       const centerX = factor * newPicture.normalizedCenterX;
 
       const picHeightOverflow = height > this.MAX_IMAGE_HEIGHT_PX;
-      console.log(newPicture);
       let yOffset = 0;
       if (picHeightOverflow && (centerY > (this.MAX_IMAGE_HEIGHT_PX / 2))) {
         if (centerY <= (height - (this.MAX_IMAGE_HEIGHT_PX / 2))) {
@@ -68,29 +67,56 @@ class DogPicture extends React.Component {
       }
 
       this.setState({
-        currPictureId: newPicture.id,
+        currPic: null,
+        currPicId: newPicture.id,
         picHeightOverflow: picHeightOverflow,
         picYOffset: yOffset
       });
+
+      this.fetchDogPicture(newPicture.id);
     }
   }
 
-  render() {
-    if (this.state.currPictureId) {
-      return (
-        <div className="poll-img-wrapper" style={{
-          maxHeight: this.MAX_IMAGE_HEIGHT_PX,
-          maskImage: this.state.picHeightOverflow ? `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))` : "none"
-        }}>
-          <img className="poll-img" style={{
-            marginTop: -1 * this.state.picYOffset
-          }} src={ `http://localhost:8080/dogpictures/${ this.state.currPictureId }` } alt="Freddy Pic" />
-        </div>
+  fetchDogPicture(id) {
+    fetch(`http://localhost:8080/dogpictures/${ id }`)
+      .then(
+        (res) => {
+          res.blob().then(
+            (ress) => {
+              const img = URL.createObjectURL(ress);
+              this.setState({ currPic: img })
+            },
+            (error) => this.apiError(error)
+          )
+        },
+        (error) => this.apiError(error)
       );
-    }
-    else {
-      return <img src={LoadingSpinner} alt="Loading..." />;
-    }
+  }
+
+  /**
+   * Handles what should happen when there is an error from the API
+   * @param {json} error Describes info from the error
+   */
+  apiError(error) {
+    console.log(error); // TODO Figure out how to show this
+  }
+
+  render() {
+    return (
+      <div style={{height: this.MAX_IMAGE_HEIGHT_PX}}>
+        {this.state.currPic
+          ? <div className="poll-img-wrapper" style={{
+              maxHeight: this.MAX_IMAGE_HEIGHT_PX,
+              maskImage: this.state.picHeightOverflow ? `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))` : "none"
+            }}>
+              <img className="poll-img" style={{
+                marginTop: -1 * this.state.picYOffset
+              }} src={ this.state.currPic } alt="Freddy Pic" />
+            </div>
+          : <img className="poll-img-loading" src={LoadingSpinner} alt="Loading..." />
+        }
+      </div>
+    )
   }
 }
 
