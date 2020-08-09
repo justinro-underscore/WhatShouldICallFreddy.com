@@ -43,9 +43,11 @@ class Poll extends React.Component {
     super(props);
     this.cookies = this.props.cookies;
     const namesSeen = this.cookies.get("namesSeen");
+    this.MAX_IMAGE_HEIGHT_PX = 800;
     this.state = {
       name: "",
       currId: null,
+      picHeightOverflow: true,
       currPicId: null,
       allNamesSeen: false,
       loading: true,
@@ -110,13 +112,13 @@ class Poll extends React.Component {
   }
 
   fetchDogPictureId() {
-    fetch(`http://localhost:8080/dogpictures/randomid/${ this.state.currPicId ? this.state.currPicId + "/" : "" }`)
+    fetch(`http://localhost:8080/dogpictures/info/random/${ this.state.currPicId ? this.state.currPicId + "/" : "" }`)
       .then(
         (res) => {
-          res.text().then(
+          res.json().then(
             (resjson) => {
               this.setState({
-                currPicId: JSON.parse(resjson)
+                currPicId: resjson.id
               });
             },
             (error) => this.apiError(error)
@@ -164,7 +166,11 @@ class Poll extends React.Component {
               ? <div style={{opacity: style.opacity, marginBottom: "20px"}}>
                   <p className="poll-header">Does this name fit?</p>
                   <NameCard name={ this.state.name } rotation={ style.rot }/>
-                  {this.state.currPicId ? <img className="poll-img" src={ `http://localhost:8080/dogpictures/${ this.state.currPicId }` } alt="Freddy Pic" /> : <img src={LoadingSpinner} />}
+                  {this.state.currPicId
+                    ? <div className="poll-img-wrapper" style={{maskImage: this.state.picHeightOverflow ? `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))` : "none"}}>
+                        <img className="poll-img" src={ `http://localhost:8080/dogpictures/${ this.state.currPicId }` } alt="Freddy Pic" />
+                      </div>
+                    : <img src={LoadingSpinner} />}
                   <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } newPicFunc={ () => this.fetchDogPictureId() } rotation={ style.rot }/>
                 </div>
               : <p className="poll-header">
