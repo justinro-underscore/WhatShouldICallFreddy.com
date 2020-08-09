@@ -22,6 +22,78 @@ function PollOptions(props) {
   );
 }
 
+class DogPicture extends React.Component {
+  constructor(props) {
+    super(props);
+    this.MAX_IMAGE_HEIGHT_PX = 800;
+    this.state = {
+      currPic: null,
+      currPictureId: null,
+      picHeightOverflow: false,
+      picWidthOverflow: false, // TODO Add this functionality
+      picYOffset: 0, // Must always be nonnegative
+      picXOffset: 0 // TODO Add this functionality
+    }
+    this.setNewWidthOfPicture();
+    window.addEventListener("resize", () => this.setNewWidthOfPicture());
+  }
+
+  setNewWidthOfPicture() {
+    let windowWidth = window.innerWidth;
+    if (windowWidth > 1000) {
+      windowWidth = 1000;
+    }
+    this.wrapperWidth = windowWidth - 100; // TODO With the way the doc is set up, this is not entirely accurate
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.picture && (!this.state.currPictureId || (nextProps.picture.id !== this.state.currPictureId))) {
+      const newPicture = nextProps.picture;
+      const factor = this.wrapperWidth / newPicture.normalizedWidth;
+      const height = factor * newPicture.normalizedHeight;
+      const width = factor * newPicture.normalizedWidth;
+      const centerY = factor * newPicture.normalizedCenterY;
+      const centerX = factor * newPicture.normalizedCenterX;
+
+      const picHeightOverflow = height > this.MAX_IMAGE_HEIGHT_PX;
+      console.log(newPicture);
+      let yOffset = 0;
+      if (picHeightOverflow && (centerY > (this.MAX_IMAGE_HEIGHT_PX / 2))) {
+        if (centerY <= (height - (this.MAX_IMAGE_HEIGHT_PX / 2))) {
+          yOffset = centerY - (this.MAX_IMAGE_HEIGHT_PX / 2);
+        }
+        else {
+          yOffset = height - this.MAX_IMAGE_HEIGHT_PX;
+        }
+      }
+
+      this.setState({
+        currPictureId: newPicture.id,
+        picHeightOverflow: picHeightOverflow,
+        picYOffset: yOffset
+      });
+    }
+  }
+
+  render() {
+    if (this.state.currPictureId) {
+      return (
+        <div className="poll-img-wrapper" style={{
+          maxHeight: this.MAX_IMAGE_HEIGHT_PX,
+          maskImage: this.state.picHeightOverflow ? `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))` : "none"
+        }}>
+          <img className="poll-img" style={{
+            marginTop: -1 * this.state.picYOffset
+          }} src={ `http://localhost:8080/dogpictures/${ this.state.currPictureId }` } alt="Freddy Pic" />
+        </div>
+      );
+    }
+    else {
+      return <img src={LoadingSpinner} alt="Loading..." />;
+    }
+  }
+}
+
 export default class Poll extends React.Component {
   /**
    * Set up react component
@@ -31,12 +103,10 @@ export default class Poll extends React.Component {
     super(props);
     this.cookies = this.props.cookies;
     const namesSeen = this.cookies.get("namesSeen");
-    this.MAX_IMAGE_HEIGHT_PX = 800;
     this.state = {
       name: "",
       currId: null,
-      picHeightOverflow: true,
-      currPicId: null,
+      currDogPicture: null,
       allNamesSeen: false,
       loading: true,
       rotation: 20,
@@ -50,7 +120,7 @@ export default class Poll extends React.Component {
    */
   componentDidMount() {
     this.fetchName();
-    this.fetchDogPictureId();
+    this.fetchRandomDogPicture();
   }
 
   addNameSeen(id) {
@@ -99,14 +169,14 @@ export default class Poll extends React.Component {
       );
   }
 
-  fetchDogPictureId() {
-    fetch(`http://localhost:8080/dogpictures/info/random/${ this.state.currPicId ? this.state.currPicId + "/" : "" }`)
+  fetchRandomDogPicture() {
+    fetch(`http://localhost:8080/dogpictures/info/random/${ this.state.currDogPicture ? this.state.currDogPicture.id + "/" : "" }`)
       .then(
         (res) => {
           res.json().then(
             (resjson) => {
               this.setState({
-                currPicId: resjson.id
+                currDogPicture: resjson
               });
             },
             (error) => this.apiError(error)
@@ -127,7 +197,7 @@ export default class Poll extends React.Component {
         (res) => {
           this.addNameSeen(this.state.currId);
           this.fetchName();
-          this.fetchDogPictureId();
+          this.fetchRandomDogPicture();
         },
         (error) => this.apiError(error)
       );
@@ -154,12 +224,8 @@ export default class Poll extends React.Component {
               ? <div style={{opacity: style.opacity, marginBottom: "20px"}}>
                   <p className="poll-header">Does this name fit?</p>
                   <NameCard name={ this.state.name } rotation={ style.rot }/>
-                  {this.state.currPicId
-                    ? <div className="poll-img-wrapper" style={{maskImage: this.state.picHeightOverflow ? `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))` : "none"}}>
-                        <img className="poll-img" src={ `http://localhost:8080/dogpictures/${ this.state.currPicId }` } alt="Freddy Pic" />
-                      </div>
-                    : <img src={LoadingSpinner} alt="Loading..." />}
-                  <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } newPicFunc={ () => this.fetchDogPictureId() } rotation={ style.rot }/>
+                  <DogPicture picture={ this.state.currDogPicture }/>
+                  <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } newPicFunc={ () => this.fetchRandomDogPicture() } rotation={ style.rot }/>
                 </div>
               : <p className="poll-header">
                   All dog names seen!<br />
