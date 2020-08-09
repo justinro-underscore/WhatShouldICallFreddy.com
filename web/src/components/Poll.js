@@ -30,9 +30,8 @@ class DogPicture extends React.Component {
       currPic: null,
       currPicId: null,
       picHeightOverflow: false,
-      picWidthOverflow: false, // TODO Add this functionality
       picYOffset: 0, // Must always be nonnegative
-      picXOffset: 0 // TODO Add this functionality
+      picXOffset: 0
     }
     this.setNewWidthOfPicture();
     window.addEventListener("resize", () => this.setNewWidthOfPicture());
@@ -57,6 +56,7 @@ class DogPicture extends React.Component {
 
       const picHeightOverflow = height > this.MAX_IMAGE_HEIGHT_PX;
       let yOffset = 0;
+      let xOffset = 0;
       if (picHeightOverflow && (centerY > (this.MAX_IMAGE_HEIGHT_PX / 2))) {
         if (centerY <= (height - (this.MAX_IMAGE_HEIGHT_PX / 2))) {
           yOffset = centerY - (this.MAX_IMAGE_HEIGHT_PX / 2);
@@ -65,12 +65,21 @@ class DogPicture extends React.Component {
           yOffset = height - this.MAX_IMAGE_HEIGHT_PX;
         }
       }
+      if (!picHeightOverflow && (centerX > (this.wrapperWidth / 2))) {
+        if (centerX <= (width - (this.wrapperWidth / 2))) {
+          xOffset = centerX - (this.wrapperWidth / 2);
+        }
+        else {
+          xOffset = width - this.wrapperWidth;
+        }
+      }
 
       this.setState({
         currPic: null,
         currPicId: newPicture.id,
         picHeightOverflow: picHeightOverflow,
-        picYOffset: yOffset
+        picYOffset: yOffset,
+        picXOffset: xOffset,
       });
 
       this.fetchDogPicture(newPicture.id);
@@ -106,11 +115,13 @@ class DogPicture extends React.Component {
       <div style={{height: this.MAX_IMAGE_HEIGHT_PX}}>
         {this.state.currPic
           ? <div className="poll-img-wrapper" style={{
-              maxHeight: this.MAX_IMAGE_HEIGHT_PX,
-              maskImage: this.state.picHeightOverflow ? `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))` : "none"
+              maskImage: this.state.picHeightOverflow ? `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))` : "linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))"
             }}>
               <img className="poll-img" style={{
-                marginTop: -1 * this.state.picYOffset
+                marginTop: -1 * this.state.picYOffset,
+                marginLeft: -1 * this.state.picXOffset,
+                width: this.state.picHeightOverflow ? "100%" : "",
+                height: this.state.picHeightOverflow ? "" : "100%"
               }} src={ this.state.currPic } alt="Freddy Pic" />
             </div>
           : <img className="poll-img-loading" src={LoadingSpinner} alt="Loading..." />
