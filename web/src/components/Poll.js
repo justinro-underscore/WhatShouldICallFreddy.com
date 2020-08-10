@@ -55,7 +55,6 @@ class DogPicture extends React.Component {
       const heightFactor = this.MAX_IMAGE_HEIGHT_PX / newPicture.normalizedHeight;
       const width = heightFactor * newPicture.normalizedWidth;
       const centerX = heightFactor * newPicture.normalizedCenterX;
-      console.log(width, this.wrapperWidth);
 
       const picHeightOverflow = height > this.MAX_IMAGE_HEIGHT_PX;
       let yOffset = 0;
@@ -117,15 +116,15 @@ class DogPicture extends React.Component {
     return (
       <div style={{height: this.MAX_IMAGE_HEIGHT_PX}}>
         {this.state.currPic
-          ? <div className="poll-img-wrapper" style={{
-              maskImage: this.state.picHeightOverflow ? `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))` : "linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 5%, rgba(0,0,0,1) 95%, rgba(0,0,0,0))"
-            }}>
-              <img className="poll-img" style={{
-                marginTop: -1 * this.state.picYOffset,
-                marginLeft: -1 * this.state.picXOffset,
-                width: this.state.picHeightOverflow ? "100%" : "",
-                height: this.state.picHeightOverflow ? "" : "100%"
-              }} src={ this.state.currPic } alt="Freddy Pic" />
+          ? <div className="poll-img-wrapper-wrapper">
+              <div className="poll-img-wrapper">
+                <img className="poll-img" style={{
+                  marginTop: -1 * this.state.picYOffset,
+                  marginLeft: -1 * this.state.picXOffset,
+                  width: this.state.picHeightOverflow ? "100%" : "",
+                  height: this.state.picHeightOverflow ? "" : "100%"
+                }} src={ this.state.currPic } alt="Freddy Pic" />
+              </div>
             </div>
           : <img className="poll-img-loading" src={LoadingSpinner} alt="Loading..." />
         }
