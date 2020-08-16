@@ -1,9 +1,11 @@
 package com.justin.whatshouldicallfreddy;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+// import java.nio.charset.StandardCharsets;
 
 import com.justin.whatshouldicallfreddy.models.DogName;
 import com.justin.whatshouldicallfreddy.models.DogPicture;
@@ -26,7 +28,11 @@ public class LoadDatabase {
 
   private static void preloadDogNames(DogNameRepository repository) {
     log.info("Preloading dog names...");
-    String[] names = {"Charlie", "Max", "Buddy", "Oscar", "Milo", "Archie", "Ollie", "Toby", "Jack", "Teddy"}; // Preload top 10 dog names
+    String[] names = { "Charlie", "Max", "Buddy", "Oscar", "Milo", "Archie", "Ollie", "Toby", "Jack", "Teddy" }; // Preload
+                                                                                                                 // top
+                                                                                                                 // 10
+                                                                                                                 // dog
+                                                                                                                 // names
     for (String name : names) {
       log.info("Preloading " + repository.save(new DogName(name)));
     }
@@ -35,25 +41,33 @@ public class LoadDatabase {
 
   private static void preloadDogPictures(DogPictureRepository repository) {
     log.info("Preloading dog pictures...");
-    String imgLocationPath = "api/src/main/resources/image/freddy/";
+    String imgLocationPath = "/image/freddy/";
     // File[] images = (new File(imgLocationPath)).listFiles();
     // for (File f : images) {
     //   log.info("Preloading " + repository.save(new DogPicture("image/freddy/" + f.getName())));
     // }
     try {
       String jsonString = "";
-      Scanner scn = new Scanner(new File(imgLocationPath + "images.json"));
-      while (scn.hasNextLine()) {
-        jsonString += scn.nextLine() + "\n";
+      InputStream fis = LoadDatabase.class.getResourceAsStream(imgLocationPath + "images.json");
+      InputStreamReader isr = new InputStreamReader(fis);
+      BufferedReader br = new BufferedReader(isr);
+      String line = null;
+      do {
+        line = br.readLine();
+        if (line != null) {
+          jsonString += line + "\n";
+        }
       }
-      scn.close();
+      while (line != null);
+      br.close();
+      isr.close();
 
       JSONParser parser = new JSONParser();
       JSONArray dogPictures = (JSONArray)parser.parse(jsonString);
   
       for (int i = 0; i < dogPictures.size(); i++) {
         JSONObject dogPicObj = (JSONObject)dogPictures.get(i);
-        DogPicture dogPicture = new DogPicture("image/freddy/" + dogPicObj.get("fileName"), ((Long)dogPicObj.get("centerX")).intValue(), ((Long)dogPicObj.get("centerY")).intValue());
+        DogPicture dogPicture = new DogPicture(imgLocationPath + dogPicObj.get("fileName"), ((Long)dogPicObj.get("centerX")).intValue(), ((Long)dogPicObj.get("centerY")).intValue());
         if (dogPicture.getFileName().length() > 0) {
           log.info("Preloading " + repository.save(dogPicture));
         }
@@ -63,8 +77,8 @@ public class LoadDatabase {
       }
       log.info("Finished preloading dog pictures");
     }
-    catch (FileNotFoundException e) {
-      log.error("Dog pictures JSON file not found");
+    catch (IOException e) {
+        log.error("Dog pictures JSON file not found (or another IOException occured)");
     }
     catch (ParseException e) {
       log.error("Dog pictures JSON file could not be parsed");

@@ -26,7 +26,7 @@ public class DogPicture {
   public DogPicture(String fileName, int centerX, int centerY) {
     try {
       this.fileName = fileName;
-      BufferedImage img = ImageIO.read(new File("api/src/main/resources/" + this.fileName));
+      BufferedImage img = ImageIO.read(getClass().getResourceAsStream(this.fileName));
       int width = img.getWidth();
       int height = img.getHeight();
 
