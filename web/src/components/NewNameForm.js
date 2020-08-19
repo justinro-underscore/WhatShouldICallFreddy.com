@@ -18,7 +18,7 @@ export default class NewNameForm extends React.Component {
   sendName(name) {
     this.setState({showInput: false});
     this.loading = true;
-    fetch("http://localhost:8080/dognames", {
+    fetch("/api/dognames", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

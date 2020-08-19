@@ -28,7 +28,7 @@ class Body extends React.Component {
 
   componentDidMount() {
     try {
-      fetch("http://localhost:8080/heartbeat")
+      fetch("/api/heartbeat")
         .then(
           (res) => this.setState({ loading: false }),
           (error) => this.apiError(error)

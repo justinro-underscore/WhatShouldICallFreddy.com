@@ -21,7 +21,7 @@ export default class NameResultsChart extends React.Component {
       options: null,
       refreshHover: false
     });
-    fetch(`http://localhost:8080/dognames/`)
+    fetch(`/api/dognames/`)
       .then(
         (res) => {
           res.json().then(

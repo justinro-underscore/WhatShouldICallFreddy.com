@@ -89,7 +89,7 @@ class DogPicture extends React.Component {
   }
 
   fetchDogPicture(id) {
-    fetch(`http://localhost:8080/dogpictures/${ id }`)
+    fetch(`/api/dogpictures/${ id }`)
       .then(
         (res) => {
           res.blob().then(
@@ -181,7 +181,7 @@ export default class Poll extends React.Component {
   }
 
   fetchName() {
-    fetch(`http://localhost:8080/dognames/one`, {credentials: "include"})
+    fetch(`/api/dognames/one`, {credentials: "include"})
       .then(
         (res) => {
           if (res.status === 200) {
@@ -209,7 +209,7 @@ export default class Poll extends React.Component {
   }
 
   fetchRandomDogPicture() {
-    fetch(`http://localhost:8080/dogpictures/info/random/${ this.state.currDogPicture ? this.state.currDogPicture.id + "/" : "" }`)
+    fetch(`/api/dogpictures/info/random/${ this.state.currDogPicture ? this.state.currDogPicture.id + "/" : "" }`)
       .then(
         (res) => {
           res.json().then(
@@ -231,7 +231,7 @@ export default class Poll extends React.Component {
   }
 
   voteOnName(voteIsYes) {
-    fetch(`http://localhost:8080/dognames/vote/${ this.state.currId }/${voteIsYes}`, {method: 'POST', credentials: "include"})
+    fetch(`/api/dognames/vote/${ this.state.currId }/${voteIsYes}`, {method: 'POST', credentials: "include"})
       .then(
         (res) => {
           this.addNameSeen(this.state.currId);
