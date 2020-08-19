@@ -33,7 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true") // TODO Make this legit
+@RequestMapping(value = "/api")
+@CrossOrigin(origins = {"http://localhost:3000", "http://www.whatshouldicallfreddy.com"}, allowCredentials = "true") // TODO Make this legit
 @RestController
 public class WhatShouldICallFreddyController {
   private final DogNameRepository dogNameRepository;
