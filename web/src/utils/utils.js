@@ -81,7 +81,7 @@ export function fetchApi({
         apiCallback[0](res);
       }
       else {
-        resErrorCallback(res);
+        resErrorCallback ? resErrorCallback(res) : apiError(res);
       }
     },
     (error) => errorCallback(error)
