@@ -1,5 +1,6 @@
 import React from 'react';
 import { Motion, spring } from 'react-motion';
+import Filter from 'bad-words';
 import { fetchApi } from '../utils/utils';
 import LoadingSpinner from '../res/loading.gif';
 
@@ -65,23 +66,33 @@ export default class NewNameForm extends React.Component {
     this.apiResult = null;
   }
 
+  setError(errorText) {
+    this.setState({
+      apiResultText: errorText
+    });
+    this.apiResult = {
+      error: true,
+      body: ""
+    };
+  }
+
   handleSubmit(event) {
     let name = this.state.newName.trim();
     if (name !== "") {
+      name = name.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
       const regexName = new RegExp("^[A-Za-z0-9 ]+$");
-      if (regexName.test(name)) {
-        name = name.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-        this.sendName(name);
-        setTimeout(() => this.checkLoading(), this.LOADING_WAIT_MILLI_SEC);
+      if (!regexName.test(name)) {
+        this.setError("Invalid name (name must only include letters, digits, and/or spaces)");
+      }
+      else if (name === "Freddy") {
+        this.setError("No, you cannot suggest \"Freddy\". That's the whole point.");
+      }
+      else if (new Filter().isProfane(name)) {
+        this.setError("Children use this website. Try again.");
       }
       else {
-        this.setState({
-          apiResultText: `Invalid name (name must only include letters, digits, and/or spaces)`
-        });
-        this.apiResult = {
-          error: true,
-          body: ""
-        };
+        this.sendName(name);
+        setTimeout(() => this.checkLoading(), this.LOADING_WAIT_MILLI_SEC);
       }
     }
     event.preventDefault();
@@ -92,7 +103,7 @@ export default class NewNameForm extends React.Component {
       this.setState({
         newName: "",
         showInput: true,
-        apiResultText: this.apiResult.error ? this.apiResult.body : `Successfully submitted name "${this.apiResult.body.name}"`
+        apiResultText: this.apiResult.error ? this.apiResult.body : `Successfully submitted name "${this.apiResult.body.name}"!`
       });
     }
     else {
@@ -118,7 +129,7 @@ export default class NewNameForm extends React.Component {
             >
               {style => (
                 <p style={{transform: `translateY(${style.y}px)`}} className={"new-name-form-api-res" + (this.apiResult.error ? " new-name-form-api-res-error" : "")}>
-                  {this.state.apiResultText}!
+                  {this.state.apiResultText}
                 </p>
               )}
             </Motion>
