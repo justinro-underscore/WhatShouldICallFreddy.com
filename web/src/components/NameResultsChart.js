@@ -1,4 +1,5 @@
 import React from 'react';
+import { fetchApi } from '../utils/utils';
 import CanvasJSReact from '../assets/canvasjs.react';
 import LoadingSpinner from '../res/loading.gif';
 
@@ -21,16 +22,11 @@ export default class NameResultsChart extends React.Component {
       options: null,
       refreshHover: false
     });
-    fetch(`/api/dognames/`)
-      .then(
-        (res) => {
-          res.json().then(
-            (resjson) => this.formatOptions(resjson),
-            (error) => this.apiError(error)
-          );
-        },
-        (error) => this.apiError(error)
-      );
+    fetchApi({
+      env: process.env.NODE_ENV,
+      endpoint: `dognames`,
+      resCallback: (resjson) => this.formatOptions(resjson)
+    });
   }
 
   formatOptions(jsonData) {
@@ -79,14 +75,6 @@ export default class NameResultsChart extends React.Component {
       currWinner: yesVotesDataPoints[0].label,
       options: options
     });
-  }
-
-  /**
-   * Handles what should happen when there is an error from the API
-   * @param {json} error Describes info from the error
-   */
-  apiError(error) {
-    console.log(error); // TODO Figure out how to show this
   }
 
   refreshHover(hovering) {

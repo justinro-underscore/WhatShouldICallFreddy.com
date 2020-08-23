@@ -1,5 +1,6 @@
 import React from 'react';
 import { Motion, spring } from 'react-motion';
+import { fetchApi } from '../utils/utils';
 import LoadingSpinner from '../res/loading.gif';
 
 export default class NewNameForm extends React.Component {
@@ -18,37 +19,30 @@ export default class NewNameForm extends React.Component {
   sendName(name) {
     this.setState({showInput: false});
     this.loading = true;
-    fetch("/api/dognames", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+    fetchApi({
+      env: process.env.NODE_ENV,
+      endpoint: `dognames`,
+      requestType: "POST",
       body: JSON.stringify(name),
-      credentials: "include"
-    })
-      .then(
-        (res) => {
-          if (res.status === 200) {
-            res.json().then(
-              (resjson) => {
-                this.apiResult = {
-                  error: false,
-                  body: resjson
-                };
-                this.loading = false;
-              },
-              (error) => this.apiError(error)
-            );
-          }
-          else {
-            res.text().then(
-              (text) => this.apiError(text),
-              (error) => this.apiError(error)
-            );
-          }
+      includeCreds: true,
+      resCallback: {
+        200: {
+          resCallback: (resJson) => {
+            this.apiResult = {
+              error: false,
+              body: resJson
+            };
+            this.loading = false;
+          },
+          resErrorCallback: (error) => this.apiError(error)
         },
-        (error) => this.apiError(error)
-      );
+        0: {
+          resType: "text",
+          resCallback: (text) => this.apiError(text),
+          resErrorCallback: (error) => this.apiError(error)
+        }
+      }
+    });
   }
 
   /**
@@ -61,7 +55,6 @@ export default class NewNameForm extends React.Component {
       body: String(error)
     };
     this.loading = false;
-    // console.log(error); // TODO Figure out how to show this
   }
 
   handleChange(event) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Motion, spring } from 'react-motion';
 import { withCookies, CookiesProvider } from 'react-cookie';
+import { fetchApi } from './utils/utils';
 import './index.css';
 import LoadingSpinner from './res/loading.gif';
 import Poll from './components/Poll';
@@ -28,11 +29,12 @@ class Body extends React.Component {
 
   componentDidMount() {
     try {
-      fetch("/api/heartbeat")
-        .then(
-          (res) => this.setState({ loading: false }),
-          (error) => this.apiError(error)
-        );
+      fetchApi({
+        env: process.env.NODE_ENV,
+        endpoint: "heartbeat",
+        resCallback: (res) => this.setState({ loading: false }),
+        errorCallback: (error) => this.apiError(error)
+      });
     }
     catch (e) {
       this.apiError(e);

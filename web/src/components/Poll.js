@@ -1,5 +1,6 @@
 import React from 'react';
 import { Motion, spring, presets } from 'react-motion';
+import { fetchApi } from '../utils/utils';
 import LoadingSpinner from '../res/loading.gif';
 
 function NameCard(props) {
@@ -89,27 +90,15 @@ class DogPicture extends React.Component {
   }
 
   fetchDogPicture(id) {
-    fetch(`/api/dogpictures/${ id }`)
-      .then(
-        (res) => {
-          res.blob().then(
-            (ress) => {
-              const img = URL.createObjectURL(ress);
-              this.setState({ currPic: img })
-            },
-            (error) => this.apiError(error)
-          )
-        },
-        (error) => this.apiError(error)
-      );
-  }
-
-  /**
-   * Handles what should happen when there is an error from the API
-   * @param {json} error Describes info from the error
-   */
-  apiError(error) {
-    console.log(error); // TODO Figure out how to show this
+    fetchApi({
+      env: process.env.NODE_ENV,
+      endpoint: `dogpictures/${ id }`,
+      resType: "blob",
+      resCallback: (resBlob) => {
+        const img = URL.createObjectURL(resBlob);
+        this.setState({ currPic: img })
+      }
+    });
   }
 
   render() {
@@ -181,48 +170,40 @@ export default class Poll extends React.Component {
   }
 
   fetchName() {
-    fetch(`/api/dognames/one`, {credentials: "include"})
-      .then(
-        (res) => {
-          if (res.status === 200) {
-            res.json().then(
-              (resjson) => {
-                this.setState({
-                  name: resjson.name,
-                  currId: resjson.id,
-                  loading: false
-                });
-                setTimeout(() => {
-                  clearInterval(this.rotationInterval);
-                  this.setState({rotation: 0});
-                }, 100);
-              },
-              (error) => this.apiError(error)
-            );
-          }
-          else if (res.status === 204) {
-            this.setState({ allNamesSeen: true });
+    fetchApi({
+      env: process.env.NODE_ENV,
+      endpoint: "dognames/one",
+      resCallback: {
+        200: {
+          resCallback: (resjson) => {
+            this.setState({
+              name: resjson.name,
+              currId: resjson.id,
+              loading: false
+            });
+            setTimeout(() => {
+              clearInterval(this.rotationInterval);
+              this.setState({rotation: 0});
+            }, 100);
           }
         },
-        (error) => this.apiError(error)
-      );
+        204: {
+          callback: (res) => this.setState({ allNamesSeen: true })
+        }
+      }
+    });
   }
 
   fetchRandomDogPicture() {
-    fetch(`/api/dogpictures/info/random/${ this.state.currDogPicture ? this.state.currDogPicture.id + "/" : "" }`)
-      .then(
-        (res) => {
-          res.json().then(
-            (resjson) => {
-              this.setState({
-                currDogPicture: resjson
-              });
-            },
-            (error) => this.apiError(error)
-          );
-        },
-        (error) => this.apiError(error)
-      );
+    fetchApi({
+      env: process.env.NODE_ENV,
+      endpoint: `dogpictures/info/random/${ this.state.currDogPicture ? this.state.currDogPicture.id + "/" : "" }`,
+      resCallback: (resjson) => {
+        this.setState({
+          currDogPicture: resjson
+        });
+      }
+    });
   }
 
   resetRotationInterval(startLeft) {
@@ -231,24 +212,18 @@ export default class Poll extends React.Component {
   }
 
   voteOnName(voteIsYes) {
-    fetch(`/api/dognames/vote/${ this.state.currId }/${voteIsYes}`, {method: 'POST', credentials: "include"})
-      .then(
-        (res) => {
-          this.addNameSeen(this.state.currId);
-          this.fetchName();
-          this.fetchRandomDogPicture();
-        },
-        (error) => this.apiError(error)
-      );
+    fetchApi({
+      env: process.env.NODE_ENV,
+      endpoint: `dognames/vote/${ this.state.currId }/${voteIsYes}`,
+      requestType: "POST",
+      includeCreds: true,
+      callback: (res) => {
+        this.addNameSeen(this.state.currId);
+        this.fetchName();
+        this.fetchRandomDogPicture();
+      }
+    });
     this.resetRotationInterval(voteIsYes);
-  }
-
-  /**
-   * Handles what should happen when there is an error from the API
-   * @param {json} error Describes info from the error
-   */
-  apiError(error) {
-    console.log(error); // TODO Figure out how to show this
   }
 
   render() {
