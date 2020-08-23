@@ -2,6 +2,7 @@ package com.justin.whatshouldicallfreddy;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 
@@ -65,7 +66,7 @@ public class WhatShouldICallFreddyController {
   public DogName oneDogName(@CookieValue(value="namesSeen", required=false) String namesSeenString) {
     Long[] namesSeen = new Long[0];
     if (namesSeenString != null) {
-      String[] names = namesSeenString.split(",");
+      String[] names = new String(Base64.getUrlDecoder().decode(namesSeenString)).split(",");
       namesSeen = new Long[names.length];
       for (int i = 0; i < names.length; i++) {
         namesSeen[i] = Long.valueOf(names[i]);

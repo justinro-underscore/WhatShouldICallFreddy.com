@@ -154,10 +154,10 @@ export default class Poll extends React.Component {
   addNameSeen(id) {
     let namesSeen = []
     if (this.state.namesSeen) {
-      namesSeen = this.state.namesSeen.split(",");;
+      namesSeen = atob(this.state.namesSeen).split(",");
     }
     namesSeen.push(id);
-    const namesSeenStr = namesSeen.toString();
+    const namesSeenStr = btoa(namesSeen.toString());
 
     let expiration = new Date();
     const EXPIRATION_TIME_MINUTES = 60 * 24 * 14; // 2 weeks
@@ -173,6 +173,7 @@ export default class Poll extends React.Component {
     fetchApi({
       env: process.env.NODE_ENV,
       endpoint: "dognames/one",
+      includeCreds: true,
       resCallback: {
         200: {
           resCallback: (resjson) => {
@@ -216,7 +217,6 @@ export default class Poll extends React.Component {
       env: process.env.NODE_ENV,
       endpoint: `dognames/vote/${ this.state.currId }/${voteIsYes}`,
       requestType: "POST",
-      includeCreds: true,
       callback: (res) => {
         this.addNameSeen(this.state.currId);
         this.fetchName();
