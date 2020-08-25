@@ -13,12 +13,16 @@ function NameCard(props) {
 
 function PollOptions(props) {
   return (
-    <div className="poll-options-container" style={{transform: `rotate(${ props.rotation }deg)`}}>
-      <p className="poll-option poll-option-yes" onClick={ () => props.voteFunc(true) }>YES</p>
-      <hr className="poll-option-divider"/>
-      <p className="poll-option poll-option-new-pic" onClick={ () => props.newPicFunc() }>NEW PICTURE</p>
-      <hr className="poll-option-divider"/>
-      <p className="poll-option poll-option-no" onClick={ () => props.voteFunc(false) }>NO</p>
+    <div className="poll-options-container" style={{transform: `rotate(${ props.allNamesSeen ? 0 : props.rotation }deg)`}}>
+      {!props.allNamesSeen && <>
+        <p className="poll-option poll-option-yes" onClick={ () => props.voteFunc(true) }>YES</p>
+        <hr className="poll-option-divider"/>
+      </>}
+      <p className="poll-option poll-option-new-pic" style={{width: props.allNamesSeen ? "100%" : ""}} onClick={ () => props.newPicFunc() }>NEW PICTURE</p>
+      {!props.allNamesSeen && <>
+        <hr className="poll-option-divider"/>
+        <p className="poll-option poll-option-no" onClick={ () => props.voteFunc(false) }>NO</p>
+      </>}
     </div>
   );
 }
@@ -245,7 +249,9 @@ export default class Poll extends React.Component {
         this.fetchRandomDogPicture();
       }
     });
-    this.resetRotationInterval(voteIsYes);
+    if (!this.state.allNamesSeen) {
+      this.resetRotationInterval(voteIsYes);
+    }
   }
 
   render() {
@@ -256,19 +262,20 @@ export default class Poll extends React.Component {
       >
         {style => (
           <div className="poll-container">
-            {!this.state.allNamesSeen
-              ? <div style={{opacity: style.opacity, marginBottom: "20px"}}>
+            <div style={{opacity: this.state.allNamesSeen ? 1 : style.opacity, marginBottom: "20px"}}>
+              {!this.state.allNamesSeen
+              ? <>
                   <p className="poll-header">Does this name fit?</p>
                   <NameCard name={ this.state.name } rotation={ style.rot }/>
-                  <DogPicture picture={ this.state.currDogPicture }/>
-                  <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } newPicFunc={ () => this.fetchRandomDogPicture() } rotation={ style.rot }/>
-                </div>
+                </>
               : <p className="poll-header">
                   All dog names seen!<br />
                   Maybe submit a few?
                 </p>
-            }
-            
+              }
+              <DogPicture picture={ this.state.currDogPicture }/>
+              <PollOptions voteFunc={ (voteIsYes) => this.voteOnName(voteIsYes) } newPicFunc={ () => this.fetchRandomDogPicture() } allNamesSeen={ this.state.allNamesSeen } rotation={ style.rot }/>
+            </div>
           </div>
         )}
       </Motion>
