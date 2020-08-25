@@ -196,6 +196,21 @@ body {
   color: #dd0000;
 }
 
+.description-wrapper {
+  padding: 25px;
+}
+
+.description-header {
+  font-weight: bold;
+  font-size: 32px;
+  margin: 0;
+}
+
+.description-description {
+  margin: 0;
+  margin-top: 20px;
+}
+
 .results-chart-container {
   border-radius: 20px;
   background-color: #E1E1E1;

@@ -17,6 +17,20 @@ function Header(props) {
   )
 }
 
+function Description(props) {
+  return (
+    <div className="description-wrapper">
+      <p className="description-header">What is this website?</p>
+      <p className="description-description">
+        Well, it's actually very simple. I've had my wonderful dog Freddy for around 14 years or so, and I think that when you get to be around that age,
+        isn't it time to change things up? If you stick to the same stuff your whole life, it gets boring. So that's why I think it's time Freddy gets a
+        new name. Vote on your favorite names and submit your own names for my magnificent pooch! (Or just click through the pictures - I kind of mostly made
+        this site as a place to store all of my Freddy photos)
+      </p>
+    </div>
+  )
+}
+
 class Body extends React.Component {
   constructor(props) {
     super(props);
@@ -71,6 +85,7 @@ class Body extends React.Component {
         <div>
           <Poll cookies={ this.cookies }/>
           <NewNameForm />
+          <Description />
           <NameResultsChart />
         </div>
       );
