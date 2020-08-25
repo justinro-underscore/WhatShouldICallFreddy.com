@@ -130,8 +130,8 @@ export default class Poll extends React.Component {
   constructor(props) {
     super(props);
     this.cookies = this.props.cookies;
-    const namesSeen = this.cookies.get("namesSeen");
-    const picsSeen = this.cookies.get("picsSeen");
+    const namesSeen = this.cookies.get("amesnay");
+    const picsSeen = this.cookies.get("icspay");
     this.state = {
       name: "",
       currId: null,
@@ -162,7 +162,7 @@ export default class Poll extends React.Component {
     seen.push(id);
     const seenStr = btoa(seen.toString());
 
-    this.setCookie(nameCookie ? "namesSeen" : "picsSeen", seenStr);
+    this.setCookie(nameCookie ? "amesnay" : "icspay", seenStr);
     this.setState(nameCookie ? { namesSeen: seenStr } : { picsSeen: seenStr });
   }
 
@@ -218,7 +218,7 @@ export default class Poll extends React.Component {
         },
         204:  {
           callback: (res) => {
-            this.setCookie("picsSeen", "");
+            this.setCookie("icspay", "");
             this.setState({
               picsSeen: ""
             });

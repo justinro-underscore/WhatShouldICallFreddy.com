@@ -64,7 +64,7 @@ public class WhatShouldICallFreddyController {
   }
 
   @GetMapping("/dognames/one")
-  public DogName oneDogName(@CookieValue(value="namesSeen", required=false) String namesSeenString) {
+  public DogName oneDogName(@CookieValue(value="amesnay", required=false) String namesSeenString) {
     Long[] namesSeen = new Long[0];
     if (namesSeenString != null && namesSeenString.length() > 0) {
       String[] names = new String(Base64.getUrlDecoder().decode(namesSeenString)).split(",");
@@ -232,7 +232,7 @@ public class WhatShouldICallFreddyController {
   }
 
   @GetMapping("/dogpictures/info/random")
-  public DogPicture getRandomDogPictureInfo(@CookieValue(value="picsSeen", required=false) String picsSeenString) {
+  public DogPicture getRandomDogPictureInfo(@CookieValue(value="icspay", required=false) String picsSeenString) {
     Long[] picsSeen = new Long[0];
     if (picsSeenString != null && picsSeenString.length() > 0) {
       String[] pics = new String(Base64.getUrlDecoder().decode(picsSeenString)).split(",");
