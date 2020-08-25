@@ -47,7 +47,7 @@ class DogPicture extends React.Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.picture && (!this.state.currPic || (nextProps.picture.id !== this.state.currPicId))) {
+    if (nextProps.picture && (!this.state.currPicId || (nextProps.picture.id !== this.state.currPicId))) {
       const newPicture = nextProps.picture;
       const widthFactor = this.wrapperWidth / newPicture.normalizedWidth;
       const height = widthFactor * newPicture.normalizedHeight;
