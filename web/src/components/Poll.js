@@ -131,6 +131,7 @@ export default class Poll extends React.Component {
     super(props);
     this.cookies = this.props.cookies;
     const namesSeen = this.cookies.get("namesSeen");
+    const picsSeen = this.cookies.get("picsSeen");
     this.state = {
       name: "",
       currId: null,
@@ -138,7 +139,8 @@ export default class Poll extends React.Component {
       allNamesSeen: false,
       loading: true,
       rotation: 20,
-      namesSeen: namesSeen
+      namesSeen: namesSeen,
+      picsSeen: picsSeen
     };
     this.rotationInterval = setInterval(() => this.setState({rotation: -20}), 50);
   }
@@ -151,22 +153,27 @@ export default class Poll extends React.Component {
     this.fetchRandomDogPicture();
   }
 
-  addNameSeen(id) {
-    let namesSeen = []
-    if (this.state.namesSeen) {
-      namesSeen = atob(this.state.namesSeen).split(",");
+  addSeenCookie(nameCookie, id) {
+    let seen = []
+    const cookieSeen = nameCookie ? this.state.namesSeen : this.state.picsSeen;
+    if (cookieSeen) {
+      seen = atob(cookieSeen).split(",");
     }
-    namesSeen.push(id);
-    const namesSeenStr = btoa(namesSeen.toString());
+    seen.push(id);
+    const seenStr = btoa(seen.toString());
 
+    this.setCookie(nameCookie ? "namesSeen" : "picsSeen", seenStr);
+    this.setState(nameCookie ? { namesSeen: seenStr } : { picsSeen: seenStr });
+  }
+
+  setCookie(cookieName, cookie) {
     let expiration = new Date();
     const EXPIRATION_TIME_MINUTES = 60 * 24 * 14; // 2 weeks
     expiration.setTime(expiration.getTime() + (EXPIRATION_TIME_MINUTES * 60 * 1000));
-    this.cookies.set("namesSeen", namesSeenStr, {
+    this.cookies.set(cookieName, cookie, {
       path: "/",
       expires: expiration
     });
-    this.setState({ namesSeen: namesSeenStr });
   }
 
   fetchName() {
@@ -198,11 +205,26 @@ export default class Poll extends React.Component {
   fetchRandomDogPicture() {
     fetchApi({
       env: process.env.NODE_ENV,
-      endpoint: `dogpictures/info/random/${ this.state.currDogPicture ? this.state.currDogPicture.id + "/" : "" }`,
-      resCallback: (resjson) => {
-        this.setState({
-          currDogPicture: resjson
-        });
+      endpoint: `dogpictures/info/random`,
+      includeCreds: true,
+      resCallback: {
+        200: {
+          resCallback: (resjson) => {
+            this.setState({
+              currDogPicture: resjson
+            });
+            this.addSeenCookie(false, resjson.id);
+          }
+        },
+        204:  {
+          callback: (res) => {
+            this.setCookie("picsSeen", "");
+            this.setState({
+              picsSeen: ""
+            });
+            this.fetchRandomDogPicture();
+          }
+        }
       }
     });
   }
@@ -218,7 +240,7 @@ export default class Poll extends React.Component {
       endpoint: `dognames/vote/${ this.state.currId }/${voteIsYes}`,
       requestType: "POST",
       callback: (res) => {
-        this.addNameSeen(this.state.currId);
+        this.addSeenCookie(true, this.state.currId);
         this.fetchName();
         this.fetchRandomDogPicture();
       }

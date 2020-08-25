@@ -10,6 +10,7 @@ import com.justin.whatshouldicallfreddy.exceptions.DogNameExistsException;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
 import com.justin.whatshouldicallfreddy.exceptions.DogPictureNotFoundException;
 import com.justin.whatshouldicallfreddy.exceptions.NoDogNamesRemainingException;
+import com.justin.whatshouldicallfreddy.exceptions.NoDogPicturesRemainingException;
 import com.justin.whatshouldicallfreddy.models.DogName;
 import com.justin.whatshouldicallfreddy.models.DogName.DogNameSorter;
 import com.justin.whatshouldicallfreddy.models.DogPicture;
@@ -65,7 +66,7 @@ public class WhatShouldICallFreddyController {
   @GetMapping("/dognames/one")
   public DogName oneDogName(@CookieValue(value="namesSeen", required=false) String namesSeenString) {
     Long[] namesSeen = new Long[0];
-    if (namesSeenString != null) {
+    if (namesSeenString != null && namesSeenString.length() > 0) {
       String[] names = new String(Base64.getUrlDecoder().decode(namesSeenString)).split(",");
       namesSeen = new Long[names.length];
       for (int i = 0; i < names.length; i++) {
@@ -231,11 +232,24 @@ public class WhatShouldICallFreddyController {
   }
 
   @GetMapping("/dogpictures/info/random")
-  public DogPicture getRandomDogPictureInfo() {
-    DogPicture dogPicture = dogPictureRepository.getRandomDogPictures().get(0);
+  public DogPicture getRandomDogPictureInfo(@CookieValue(value="picsSeen", required=false) String picsSeenString) {
+    Long[] picsSeen = new Long[0];
+    if (picsSeenString != null && picsSeenString.length() > 0) {
+      String[] pics = new String(Base64.getUrlDecoder().decode(picsSeenString)).split(",");
+      picsSeen = new Long[pics.length];
+      for (int i = 0; i < pics.length; i++) {
+        picsSeen[i] = Long.valueOf(pics[i]);
+      }
+    }
+    Object[] dogPicturesObjArr = dogPictureRepository.getRandomDogPicturesNotInList(picsSeen).toArray();
+    if (dogPicturesObjArr.length > 0) {
+      DogPicture[] dogPictures = Arrays.copyOf(dogPicturesObjArr, dogPicturesObjArr.length, DogPicture[].class);
+      DogPicture dogPicture = dogPictures[0];
 
-    log.info("GET " + "/dogpictures/info/random/ " + "Retrieving random info for " + dogPicture);
-    return dogPicture;
+      log.info("GET " + "/dogpictures/info/random/ " + "Retrieving random info for " + dogPicture);
+      return dogPicture;
+    }
+    throw new NoDogPicturesRemainingException();
   }
 
   @GetMapping("/dogpictures/info/random/{id}")
