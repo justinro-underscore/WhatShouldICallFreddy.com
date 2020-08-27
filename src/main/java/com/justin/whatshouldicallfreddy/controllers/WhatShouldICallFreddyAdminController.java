@@ -103,17 +103,17 @@ public class WhatShouldICallFreddyAdminController {
       dogName.setYesVotes(newDogName.getYesVotes());
       dogName.setNoVotes(newDogName.getNoVotes());
       return dogNameRepository.save(dogName);
-    }).orElseGet(() -> {
-      newDogName.setId(id);
-      log.info("PUT " + "/dognames/" + id + "/ " + "Dog not found, creating " + newDogName);
-      return dogNameRepository.save(newDogName);
-    });
+    }).orElseThrow(() -> new DogNameNotFoundException(id));
   }
 
   @DeleteMapping("/{token}/dognames/{id}")
   public void deleteDogName(@PathVariable String token, @PathVariable Long id) {
     verifySecurityToken(token, "DELETE " + "/dognames/" + id + "/");
     log.info("DELETE " + "/dognames/" + id + "/ " + "Deleting dog name with id " + id);
-    dogNameRepository.deleteById(id);
+    if (dogNameRepository.findById(id).isPresent()) {
+      dogNameRepository.deleteById(id);
+      return;
+    }
+    throw new DogNameNotFoundException(id);
   }
 }
