@@ -1,5 +1,7 @@
-export function getUrl(env, endpoint) {
-  return (env === "development" ? "http://localhost:8080" : "") + "/api/" + endpoint;
+import securityToken from '../res/security/security_token.js';
+
+export function getUrl(env, endpoint, admin=false) {
+  return (env === "development" ? "http://localhost:8080" : "") + (admin ? "/admin" : "") + "/api/" + (admin ? `${ securityToken }/` : "") + endpoint;
 }
 
 function defaultApiErrorFunc(errorInfo) {
@@ -9,6 +11,7 @@ function defaultApiErrorFunc(errorInfo) {
 export function fetchApi({
   env,
   endpoint,
+  admin=false,
   requestType="GET",
   body=undefined,
   includeCreds=false,
@@ -20,15 +23,16 @@ export function fetchApi({
 }) {
   const apiError = errorCallback || ((error) => defaultApiErrorFunc({
     error: error.toString(),
+    admin,
     endpoint,
     requestType
   }));
   let fetchData = {
     method: requestType
   };
-  if (requestType === "POST") {
+  if (requestType === "POST" || requestType === "PUT") {
     fetchData.headers = {"Content-Type": "application/json"};
-    fetchData.body = body
+    fetchData.body = body && JSON.stringify(body)
   }
   if (includeCreds) {
     fetchData.credentials = "include";
@@ -72,7 +76,7 @@ export function fetchApi({
       );
     }
   }
-  fetch(getUrl(env, endpoint), fetchData).then(
+  fetch(getUrl(env, endpoint, admin), fetchData).then(
     (res) => {
       if (res.status in apiCallback) {
         apiCallback[res.status](res);
@@ -84,6 +88,6 @@ export function fetchApi({
         resErrorCallback ? resErrorCallback(res) : apiError(res);
       }
     },
-    (error) => errorCallback(error)
+    (error) => apiError(error)
   );
 }
