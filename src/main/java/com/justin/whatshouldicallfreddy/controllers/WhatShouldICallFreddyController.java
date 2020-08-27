@@ -1,4 +1,4 @@
-package com.justin.whatshouldicallfreddy;
+package com.justin.whatshouldicallfreddy.controllers;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -6,6 +6,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 
+import com.justin.whatshouldicallfreddy.LoadDatabase;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameExistsException;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
 import com.justin.whatshouldicallfreddy.exceptions.DogPictureNotFoundException;
@@ -109,27 +110,6 @@ public class WhatShouldICallFreddyController {
     DogName dogName = dogNameRepository.findById(id).orElseThrow(() -> new DogNameNotFoundException(id));
     log.info("GET " + "/dognames/" + id + "/ " + "Retrieving " + dogName);
     return dogName;
-  }
-
-  @PutMapping("/dognames/{id}")
-  public DogName replaceDogName(@RequestBody DogName newDogName, @PathVariable Long id) {
-    return dogNameRepository.findById(id).map(dogName -> {
-      log.info("PUT " + "/dognames/" + id + "/ " + "Replacing " + dogName + " with " + newDogName);
-      dogName.setName(newDogName.getName());
-      dogName.setYesVotes(newDogName.getYesVotes());
-      dogName.setNoVotes(newDogName.getNoVotes());
-      return dogNameRepository.save(dogName);
-    }).orElseGet(() -> {
-      newDogName.setId(id);
-      log.info("PUT " + "/dognames/" + id + "/ " + "Dog not found, creating " + newDogName);
-      return dogNameRepository.save(newDogName);
-    });
-  }
-
-  @DeleteMapping("/dognames/{id}")
-  public void deleteDogName(@PathVariable Long id) {
-    log.info("DELETE " + "/dognames/" + id + "/ " + "Deleting dog name with id " + id);
-    dogNameRepository.deleteById(id);
   }
 
   // Increase votes
