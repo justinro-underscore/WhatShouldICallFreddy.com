@@ -8,7 +8,8 @@ body {
 .header-title {
   font: 72px 'Galada', cursive;
   margin: 10px;
-  margin-bottom: -30px;
+  margin-top: 40px;
+  line-height: 100%;
 }
 
 .header-subtitle {
