@@ -1,43 +1,23 @@
 package com.justin.whatshouldicallfreddy.controllers;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.Random;
 
 import com.justin.whatshouldicallfreddy.LoadDatabase;
-import com.justin.whatshouldicallfreddy.exceptions.DogNameExistsException;
 import com.justin.whatshouldicallfreddy.exceptions.DogNameNotFoundException;
-import com.justin.whatshouldicallfreddy.exceptions.DogPictureNotFoundException;
 import com.justin.whatshouldicallfreddy.exceptions.InvalidSecurityCredentialsException;
-import com.justin.whatshouldicallfreddy.exceptions.NoDogNamesRemainingException;
-import com.justin.whatshouldicallfreddy.exceptions.NoDogPicturesRemainingException;
 import com.justin.whatshouldicallfreddy.models.DogName;
-import com.justin.whatshouldicallfreddy.models.DogName.DogNameSorter;
-import com.justin.whatshouldicallfreddy.models.DogPicture;
 import com.justin.whatshouldicallfreddy.repos.DogNameRepository;
-import com.justin.whatshouldicallfreddy.repos.DogPictureRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping(value = "/admin/api")
