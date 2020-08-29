@@ -11,8 +11,8 @@ import javax.persistence.Id;
 public class DogName {
   private @Id @GeneratedValue Long id;
   private String name;
-  private int yesVotes;
-  private int noVotes;
+  private Integer yesVotes;
+  private Integer noVotes;
 
   public static class DogNameSorter implements Comparator<DogName> {
     public int compare(DogName a, DogName b) {
@@ -35,6 +35,12 @@ public class DogName {
     this.yesVotes = yes;
     this.noVotes = no;
   }
+
+  public void updateDogName(DogName dogName) {
+    this.name = dogName.getName() != null ? dogName.getName() : this.name;
+    this.yesVotes = dogName.getYesVotes() != null ? dogName.getYesVotes() : this.yesVotes;
+    this.noVotes = dogName.getNoVotes() != null ? dogName.getNoVotes() : this.noVotes;
+  }
   
   public Long getId() {
     return this.id;
@@ -44,11 +50,11 @@ public class DogName {
     return this.name;
   }
 
-  public int getYesVotes() {
+  public Integer getYesVotes() {
     return this.yesVotes;
   }
 
-  public int getNoVotes() {
+  public Integer getNoVotes() {
     return this.noVotes;
   }
 
@@ -64,11 +70,11 @@ public class DogName {
     this.name = name;
   }
 
-  public void setYesVotes(int yesVotes) {
+  public void setYesVotes(Integer yesVotes) {
     this.yesVotes = yesVotes;
   }
 
-  public void setNoVotes(int noVotes) {
+  public void setNoVotes(Integer noVotes) {
     this.noVotes = noVotes;
   }
 

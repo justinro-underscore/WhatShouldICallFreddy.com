@@ -79,9 +79,7 @@ public class WhatShouldICallFreddyAdminController {
     verifySecurityToken(token, "PUT " + "/dognames/" + id + "/");
     return dogNameRepository.findById(id).map(dogName -> {
       log.info("PUT " + "/dognames/" + id + "/ " + "Replacing " + dogName + " with " + newDogName);
-      dogName.setName(newDogName.getName());
-      dogName.setYesVotes(newDogName.getYesVotes());
-      dogName.setNoVotes(newDogName.getNoVotes());
+      dogName.updateDogName(newDogName);
       return dogNameRepository.save(dogName);
     }).orElseThrow(() -> new DogNameNotFoundException(id));
   }
