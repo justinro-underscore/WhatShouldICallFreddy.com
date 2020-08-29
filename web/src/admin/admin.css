@@ -10,3 +10,37 @@
 .control-panel-header {
   margin: 10px;
 }
+
+.control-panel-desc {
+  font-size: 20px;
+  margin: 5px;
+}
+
+.password-input {
+  margin: 10px;
+  margin-left: 15px;
+}
+
+.password-input:focus {
+  box-shadow: 0 0 5px 5px red;
+}
+
+.form-container {
+  border: 1px dashed black;
+  margin: 20px 0;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.form-input {
+  flex-grow: 1;
+  margin: 10px;
+}
+
+.number-input {
+  width: flex-shrink;
+}

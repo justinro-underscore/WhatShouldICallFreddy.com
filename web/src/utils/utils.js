@@ -1,7 +1,5 @@
-import securityToken from '../res/security/security_token.js';
-
-export function getUrl(env, endpoint, admin=false) {
-  return (env === "development" ? "http://localhost:8080" : "") + (admin ? "/admin" : "") + "/api/" + (admin ? `${ securityToken }/` : "") + endpoint;
+export function getUrl(env, endpoint, admin=null) {
+  return (env === "development" ? "http://localhost:8080" : "") + (admin !== null ? `/admin/api/${ admin || "_" }/` : "/api/") + endpoint;
 }
 
 function defaultApiErrorFunc(errorInfo) {
@@ -11,7 +9,7 @@ function defaultApiErrorFunc(errorInfo) {
 export function fetchApi({
   env,
   endpoint,
-  admin=false,
+  admin=null,
   requestType="GET",
   body=undefined,
   includeCreds=false,
