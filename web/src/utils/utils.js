@@ -29,8 +29,13 @@ export function fetchApi({
     method: requestType
   };
   if (requestType === "POST" || requestType === "PUT") {
-    fetchData.headers = {"Content-Type": "application/json"};
-    fetchData.body = body && JSON.stringify(body)
+    if (resType !== "image") {
+      fetchData.headers = {"Content-Type": "application/json"};
+      fetchData.body = body && JSON.stringify(body);
+    }
+    else {
+      fetchData.body = body;
+    }
   }
   if (includeCreds) {
     fetchData.credentials = "include";
@@ -62,7 +67,7 @@ export function fetchApi({
     });
   }
   else {
-    const resConversion = (res) => (!resType || resType === "json" ? res.json() :
+    const resConversion = (res) => (!resType || resType === "json" || resType === "image" ? res.json() :
       resType === "blob" ? res.blob() :
       resType === "text" ? res.text() :
       console.error(`res conversion for endpoint "${ endpoint }" is not defined for type ${ resType }`));

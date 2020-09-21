@@ -20,7 +20,7 @@ class DeleteDogName extends React.Component {
     };
   }
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (this.state.id === null) {
       this.setState({id: newProps.dogNames[0].id});
     }
@@ -79,7 +79,7 @@ class UpdateDogName extends React.Component {
     }
   }
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (this.state.id === null) {
       this.setState({id: newProps.dogNames[0].id});
     }
@@ -167,6 +167,95 @@ class UpdateDogName extends React.Component {
   }
 }
 
+class NewDogPicture extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      centerX: "",
+      centerY: "",
+      image: null
+    }
+    this.fileInput = React.createRef();
+  }
+
+  handleChange(event) {
+    const {name, value} = event.target;
+    switch (name) {
+      case "centerX":
+        if (/^[0-9]*$/.test(value)) {
+          this.setState({centerX: value});
+        }
+        break;
+      case "centerY":
+        if (/^[0-9]*$/.test(value)) {
+          this.setState({centerY: value});
+        }
+        break;
+      case "picture":
+        this.setState({
+          image: event.target.files[0]
+        });
+        break;
+      default:
+        console.error(`Name not supported! ${name}`);
+    }
+  }
+
+  uploadPicture(event) {
+    fetchApi({
+      env: process.env.NODE_ENV,
+      endpoint: `dogpictures/info`,
+      admin: this.props.adminPassword,
+      requestType: "POST",
+      body: {
+        normalizedCenterX: Number(this.state.centerX),
+        normalizedCenterY: Number(this.state.centerY),
+      },
+      resCallback: {
+        200: {
+          resCallback: (res) => {
+            const formData = new FormData();
+            formData.append("file", this.state.image);
+            fetchApi({
+              env: process.env.NODE_ENV,
+              endpoint: `dogpictures/picture/${ res }`,
+              admin: this.props.adminPassword,
+              requestType: "POST",
+              body: formData,
+              resType: "image",
+              resCallback: (res) => window.location.reload()
+            });
+          }
+        },
+        401: {
+          callback: (res) => document.getElementById("admin-password").focus()
+        }
+      }
+    })
+
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <div className="form-container">
+        <div className="form-row">
+          <label className="form-input">Center X
+            <input type="input" name="centerX" className="form-input-input" value={this.state.centerX} onChange={(event) => this.handleChange(event)} />
+          </label>
+          <label className="form-input">Center Y
+            <input type="input" name="centerY" className="form-input-input" value={this.state.centerY} onChange={(event) => this.handleChange(event)} />
+          </label>
+          <label className="form-input">Picture
+            <input type="file" name="picture" ref={this.fileInput} onChange={(event) => this.handleChange(event)} />
+          </label>
+          <button onClick={(event) => this.uploadPicture(event)}>Upload!</button>
+        </div>
+      </div>
+    );
+  }
+}
+
 class ControlPanel extends React.Component {
   constructor(props) {
     super(props);
@@ -204,6 +293,7 @@ class ControlPanel extends React.Component {
           </label>
           <DeleteDogName adminPassword={ this.state.adminPassword } dogNames={ this.state.dogNames } />
           <UpdateDogName adminPassword={ this.state.adminPassword } dogNames={ this.state.dogNames } />
+          <NewDogPicture adminPassword={ this.state.adminPassword } />
         </form>
       </div>
     );
