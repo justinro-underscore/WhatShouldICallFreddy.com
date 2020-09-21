@@ -51,6 +51,11 @@ public class WhatShouldICallFreddyAdminController {
     this.dogNameRepository = dogNameRepository;
     this.dogPictureRepository = dogPictureRepository;
 
+    securityToken = System.getenv("security_token");
+    if (securityToken != null) {
+      return;
+    }
+
     try {
       InputStream fis = WhatShouldICallFreddyAdminController.class.getResourceAsStream("/security/security_token.txt");
       InputStreamReader isr = new InputStreamReader(fis);
