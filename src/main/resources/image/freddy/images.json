@@ -1,102 +1,22 @@
 [
-  {
-    "fileName": "Freddy1.jpg",
-    "centerX": 794,
-    "centerY": 458
-  },
-  {
-    "fileName": "Freddy2.jpg",
-    "centerX": 463,
-    "centerY": 198
-  },
-  {
-    "fileName": "Freddy3.jpg",
-    "centerX": 441,
-    "centerY": 721
-  },
-  {
-    "fileName": "Freddy4.jpg",
-    "centerX": 325,
-    "centerY": 423
-  },
-  {
-    "fileName": "Freddy5.jpg",
-    "centerX": 1628,
-    "centerY": 1048
-  },
-  {
-    "fileName": "Freddy6.jpg",
-    "centerX": 426,
-    "centerY": 493
-  },
-  {
-    "fileName": "Freddy7.jpg",
-    "centerX": 522,
-    "centerY": 1512
-  },
-  {
-    "fileName": "Freddy8.jpg",
-    "centerX": 512,
-    "centerY": 516
-  },
-  {
-    "fileName": "Freddy9.jpg",
-    "centerX": 576,
-    "centerY": 498
-  },
-  {
-    "fileName": "Freddy10.jpg",
-    "centerX": 770,
-    "centerY": 682
-  },
-  {
-    "fileName": "Freddy11.jpg",
-    "centerX": 502,
-    "centerY": 680
-  },
-  {
-    "fileName": "Freddy12.jpg",
-    "centerX": 392,
-    "centerY": 836
-  },
-  {
-    "fileName": "Freddy13.jpg",
-    "centerX": 699,
-    "centerY": 1530
-  },
-  {
-    "fileName": "Freddy14.jpg",
-    "centerX": 528,
-    "centerY": 1371
-  },
-  {
-    "fileName": "Freddy15.jpg",
-    "centerX": 750,
-    "centerY": 984
-  },
-  {
-    "fileName": "Freddy16.jpg",
-    "centerX": 249,
-    "centerY": 244
-  },
-  {
-    "fileName": "Freddy17.jpg",
-    "centerX": 765,
-    "centerY": 1107
-  },
-  {
-    "fileName": "Freddy18.jpg",
-    "centerX": 976,
-    "centerY": 1000
-  },
-  {
-    "fileName": "Freddy19.jpg",
-    "centerX": 513,
-    "centerY": 1224
-  },
-  {
-    "fileName": "Freddy20.jpg",
-    "centerX": 650,
-    "centerY": 902
-  }
+  { "fileName": "Freddy1.jpg", "centerY": 458, "centerX": 794 },
+  { "fileName": "Freddy2.jpg", "centerY": 198, "centerX": 463 },
+  { "fileName": "Freddy3.jpg", "centerY": 721, "centerX": 441 },
+  { "fileName": "Freddy4.jpg", "centerY": 423, "centerX": 325 },
+  { "fileName": "Freddy5.jpg", "centerY": 1048, "centerX": 1628 },
+  { "fileName": "Freddy6.jpg", "centerY": 493, "centerX": 426 },
+  { "fileName": "Freddy7.jpg", "centerY": 1512, "centerX": 522 },
+  { "fileName": "Freddy8.jpg", "centerY": 516, "centerX": 512 },
+  { "fileName": "Freddy9.jpg", "centerY": 498, "centerX": 576 },
+  { "fileName": "Freddy10.jpg", "centerY": 682, "centerX": 770 },
+  { "fileName": "Freddy11.jpg", "centerY": 680, "centerX": 502 },
+  { "fileName": "Freddy12.jpg", "centerY": 836, "centerX": 392 },
+  { "fileName": "Freddy13.jpg", "centerY": 1530, "centerX": 699 },
+  { "fileName": "Freddy14.jpg", "centerY": 1371, "centerX": 528 },
+  { "fileName": "Freddy15.jpg", "centerY": 984, "centerX": 750 },
+  { "fileName": "Freddy16.jpg", "centerY": 244, "centerX": 249 },
+  { "fileName": "Freddy17.jpg", "centerY": 1107, "centerX": 765 },
+  { "fileName": "Freddy18.jpg", "centerY": 1000, "centerX": 976 },
+  { "fileName": "Freddy19.jpg", "centerY": 1224, "centerX": 513 },
+  { "fileName": "Freddy20.jpg", "centerY": 902, "centerX": 650 }
 ]

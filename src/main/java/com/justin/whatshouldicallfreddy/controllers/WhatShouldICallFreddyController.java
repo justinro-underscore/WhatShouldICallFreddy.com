@@ -16,7 +16,7 @@ import com.justin.whatshouldicallfreddy.models.DogName;
 import com.justin.whatshouldicallfreddy.models.DogName.DogNameSorter;
 import com.justin.whatshouldicallfreddy.models.DogPicture;
 import com.justin.whatshouldicallfreddy.repos.DogNameRepository;
-import com.justin.whatshouldicallfreddy.repos.DogPictureRepository;
+import com.justin.whatshouldicallfreddy.services.DogPictureRepositoryService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +39,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WhatShouldICallFreddyController {
   private final DogNameRepository dogNameRepository;
-  private final DogPictureRepository dogPictureRepository;
+  private final DogPictureRepositoryService dogPictureRepository;
   private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
-  public WhatShouldICallFreddyController(DogNameRepository dogNameRepository, DogPictureRepository dogPictureRepository) {
+  public WhatShouldICallFreddyController(DogNameRepository dogNameRepository, DogPictureRepositoryService dogPictureRepository) {
     this.dogNameRepository = dogNameRepository;
     this.dogPictureRepository = dogPictureRepository;
   }

@@ -6,7 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -25,18 +24,44 @@ public class DogPicture {
 
   public DogPicture(String fileName, int centerX, int centerY) {
     try {
-      this.fileName = fileName;
-      BufferedImage img = ImageIO.read(getClass().getResourceAsStream(this.fileName));
-      int width = img.getWidth();
-      int height = img.getHeight();
-
-      double factor = NORMALIZED_WIDTH_PX / width;
-      this.normalizedWidth = (int)NORMALIZED_WIDTH_PX;
-      this.normalizedHeight = (int)Math.floor(factor * height);
-      this.normalizedCenterX = (int)Math.floor(factor * centerX);
-      this.normalizedCenterY = (int)Math.floor(factor * centerY);
+      setNewDogPicture(fileName, centerX, centerY);
     }
     catch (IOException e) {}
+  }
+
+  public DogPicture(int centerX, int centerY) {
+    this.fileName = null;
+    this.normalizedCenterX = centerX;
+    this.normalizedCenterY = centerY;
+    this.normalizedHeight = 0;
+    this.normalizedWidth = 0;
+  }
+
+  /**
+   * This assumes normalizedCenterX and normalizedCenterY contain the non-normalized values of centerX and centerY
+   */
+  public void setNewDogPicture(String fileName) throws IOException {
+    if (this.fileName == null) {
+      setNewDogPicture(fileName, this.normalizedCenterX, this.normalizedCenterY);
+    }
+  }
+
+  private void setNewDogPicture(String fileName, int centerX, int centerY) throws IOException {
+    BufferedImage img = ImageIO.read(getClass().getResourceAsStream(fileName));
+    int width = img.getWidth();
+    int height = img.getHeight();
+
+    setNormalizedValues(width, height, centerX, centerY);
+
+    this.fileName = fileName;
+  }
+
+  public void setNormalizedValues(int width, int height, int centerX, int centerY) {
+    double factor = NORMALIZED_WIDTH_PX / width;
+    this.normalizedWidth = (int)NORMALIZED_WIDTH_PX;
+    this.normalizedHeight = (int)Math.floor(factor * height);
+    this.normalizedCenterX = (int)Math.floor(factor * centerX);
+    this.normalizedCenterY = (int)Math.floor(factor * centerY);
   }
 
   public Long getId() {
