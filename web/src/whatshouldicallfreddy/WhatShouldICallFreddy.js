@@ -1,6 +1,5 @@
 import React from 'react';
 import { Motion, spring } from 'react-motion';
-import { withCookies, CookiesProvider } from 'react-cookie';
 import { fetchApi } from '../utils/utils';
 import '../index.css';
 import LoadingSpinner from '../res/loading.gif';
@@ -93,24 +92,20 @@ class Body extends React.Component {
   }
 }
 
-class WhatShouldICallFreddy extends React.Component {
+export default class WhatShouldICallFreddy extends React.Component {
   render() {
     return (
-      <CookiesProvider>
-        <Motion
-          defaultStyle={{y: 20, opacity: 0}}
-          style={{y: spring(0, {stiffness: 150}), opacity: spring(1, {stiffness: 80})}}
-        >
-          {style => (
-            <div style={{transform: `translateY(${style.y}px)`, opacity: style.opacity}}>
-              <Header />
-              <Body cookies={ this.props.cookies }/>
-            </div>
-          )}
-        </Motion>
-      </CookiesProvider>
+      <Motion
+        defaultStyle={{y: 20, opacity: 0}}
+        style={{y: spring(0, {stiffness: 150}), opacity: spring(1, {stiffness: 80})}}
+      >
+        {style => (
+          <div style={{transform: `translateY(${style.y}px)`, opacity: style.opacity}}>
+            <Header />
+            <Body cookies={ this.props.cookies }/>
+          </div>
+        )}
+      </Motion>
     );
   }
 }
-
-export default withCookies(WhatShouldICallFreddy);
